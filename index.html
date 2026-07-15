@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema de Gestión del Comedor Universitario — Universidad Nacional de Moquegua, Filial Ilo.">
+  <title>SGCU — Comedor Universitario | UNAM Ilo</title>
+
+  <!--
+  ══════════════════════════════════════════════════════════════
+  HOJAS DE ESTILO — orden importante (cascada CSS)
+  ══════════════════════════════════════════════════════════════
+  1. variables.css  → tokens de diseño (colores, fuentes, etc.)
+  2. base.css       → reset, tipografía, @keyframes
+  3. layout.css     → sidebar, header, grid de página
+  4. components.css → componentes UI reutilizables
+  5. views.css      → estilos específicos por vista
+  -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/views.css">
+
+  <!--
+  ══════════════════════════════════════════════════════════════
+  SUPABASE CDN (cargado siempre, se activa con USE_SUPABASE)
+  Si no usas Supabase aún, esta línea no genera errores.
+  Cuando conectes tu proyecto, cambia USE_SUPABASE = true en config.js
+  ══════════════════════════════════════════════════════════════
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230b1329'/><text y='24' font-size='22' x='4'>🍽️</text></svg>">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════
+     TOAST CONTAINER
+     Los toasts se generan desde utils.js → showToast()
+     ════════════════════════════════════════════════════════════ -->
+<div class="toast-container" id="toast-container"></div>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     PANTALLA DE SELECCIÓN DE ROL
+     Se oculta al seleccionar un rol. Visible al volver con
+     goToRoles() desde el botón del sidebar.
+     ════════════════════════════════════════════════════════════ -->
+<section id="role-selector" style="display:flex">
+
+  <div class="role-selector-header">
+    <div class="role-selector-badge">🍽️ &nbsp; Sistema de Gestión — Comedor Universitario</div>
+    <h1>Universidad Nacional<br>de Moquegua</h1>
+    <p>Filial Ilo &nbsp;·&nbsp; Semestre 2026-I &nbsp;·&nbsp; Selecciona tu perfil de acceso</p>
+  </div>
+
+  <div class="roles-grid">
+    <div class="role-card" onclick="selectRole('beneficiario')" id="role-card-beneficiario">
+      <div class="role-card-icon icon-beneficiario">🎓</div>
+      <h3>Beneficiario</h3>
+      <p>Portal del estudiante con beneficio del comedor universitario</p>
+      <div class="role-card-badge">Estudiante</div>
+    </div>
+    <div class="role-card" onclick="selectRole('asistenta_social')" id="role-card-social">
+      <div class="role-card-icon icon-social">👩‍💼</div>
+      <h3>Asistenta Social</h3>
+      <p>Gestión de beneficiarios, postulantes y justificaciones</p>
+      <div class="role-card-badge">BIENESTAR</div>
+    </div>
+    <div class="role-card" onclick="selectRole('scanner')" id="role-card-scanner">
+      <div class="role-card-icon icon-scanner">📷</div>
+      <h3>Terminal de Registro</h3>
+      <p>Registro de asistencia por QR, código de barras o DNI</p>
+      <div class="role-card-badge">Terminal</div>
+    </div>
+    <div class="role-card" onclick="selectRole('reportes')" id="role-card-reportes">
+      <div class="role-card-icon icon-reportes">📊</div>
+      <h3>Portal de Reportes</h3>
+      <p>Estadísticas, gráficos e informes en PDF y Excel</p>
+      <div class="role-card-badge">Reportes</div>
+    </div>
+    <div class="role-card" onclick="selectRole('admin')" id="role-card-admin">
+      <div class="role-card-icon icon-admin">🛡️</div>
+      <h3>Administrador</h3>
+      <p>Gestión de usuarios, roles, permisos y respaldos del sistema</p>
+      <div class="role-card-badge">Admin</div>
+    </div>
+  </div>
+
+  <p style="margin-top:3rem;font-size:0.75rem;color:var(--text-muted);text-align:center">
+    Universidad Nacional de Moquegua &nbsp;·&nbsp; Filial Ilo &nbsp;·&nbsp; v1.0.0 &nbsp;·&nbsp; 2026
+  </p>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     APP SHELL
+     Visible al entrar a cualquier rol. Contiene sidebar +
+     cabecera + área de contenido (#view-container).
+     app.js → selectRole() muestra este bloque.
+     ════════════════════════════════════════════════════════════ -->
+<div id="app-shell" style="display:none">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Logo institucional -->
+    <div class="sidebar-logo">
+      <div class="logo-mark">U</div>
+      <div class="logo-text">
+        <strong>SGCU · UNAM</strong>
+        <span>Comedor Universitario Ilo</span>
+      </div>
+    </div>
+
+    <!-- Usuario activo — renderizado por app.js → _renderUserInfo() -->
+    <div class="sidebar-user-info">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebar-avatar">—</div>
+        <div class="user-info">
+          <strong id="sidebar-user-name">—</strong>
+          <span   id="sidebar-user-role">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegación — renderizada por app.js → renderSidebar() -->
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+
+    <!-- Botón volver -->
+    <div class="sidebar-footer">
+      <button class="btn-back-roles" onclick="goToRoles()">← Cambiar de rol</button>
+    </div>
+
+  </aside><!-- /sidebar -->
+
+
+  <!-- ── Área principal ─────────────────────────────────────── -->
+  <div class="main-content">
+
+    <!-- Cabecera superior — actualizada por app.js → navigateTo() -->
+    <header class="top-header">
+      <div class="header-title">
+        <h2 id="header-title">—</h2>
+        <p  id="header-sub"></p>
+      </div>
+      <div class="header-actions">
+        <div class="header-date" id="header-date">—</div>
+        <button class="notif-btn" id="notif-btn"
+                onclick="toggleNotifPanel()" title="Notificaciones">
+          🔔
+          <span class="notif-count" id="notif-count" style="display:none">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenido de página — vistas inyectadas aquí por navigateTo() -->
+    <main class="page-content">
+      <div id="view-container" class="page-view"></div>
+    </main>
+
+  </div><!-- /main-content -->
+
+</div><!-- /app-shell -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     SCRIPTS — orden de carga estricto (no hay bundler)
+     ════════════════════════════════════════════════════════════
+
+     CAPA 1 — Configuración (sin dependencias)
+       config.js    → constantes, tablas, nav config
+       seed.js      → datos de prueba
+
+     CAPA 2 — Core (depende de config + seed)
+       supabase.js  → cliente Supabase + servicios DB
+       utils.js     → helpers puros (fmt, showToast, QR, etc.)
+
+     CAPA 3 — Componentes (dependen de utils + supabase)
+       calendar.js  → componente calendario
+       charts.js    → componentes de gráficos SVG
+       scanner.js   → lógica del escáner de asistencia
+
+     CAPA 4 — Vistas (dependen de todo lo anterior)
+       beneficiario.js  → portal del estudiante
+       social.js        → portal de la asistenta social
+       scanner.view.js  → terminal de registro
+       reportes.js      → portal de reportes
+       admin.js         → portal del administrador
+
+     CAPA 5 — Aplicación (depende de todo)
+       app.js       → router, sidebar, role selector
+     ════════════════════════════════════════════════════════════ -->
+
+<!-- CAPA 1: Configuración -->
+<script src="js/config.js"></script>
+<script src="js/seed.js"></script>
+
+<!-- CAPA 2: Core -->
+<script src="js/supabase.js"></script>
+<script src="js/utils.js"></script>
+
+<!-- CAPA 3: Componentes -->
+<script src="js/components/calendar.js"></script>
+<script src="js/components/charts.js"></script>
+<script src="js/components/scanner.js"></script>
+
+<!-- CAPA 4: Vistas -->
+<script src="js/views/beneficiario.js"></script>
+<script src="js/views/social.js"></script>
+<script src="js/views/scanner.view.js"></script>
+<script src="js/views/reportes.js"></script>
+<script src="js/views/admin.js"></script>
+
+<!-- CAPA 5: Aplicación -->
+<script src="js/app.js"></script>
+
+</body>
+</html>

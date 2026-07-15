@@ -1,0 +1,354 @@
+/* ============================================================
+   views.css — Estilos Específicos por Vista
+   ============================================================
+   Estilos que pertenecen a vistas concretas y no son
+   reutilizables como componentes generales.
+   Secciones: Role Selector → Scanner → Calendario →
+              Gráficos → QR Display → Resultado de
+              Asistencia → Tarjeta de Beneficio →
+              Notificaciones → Score Ring
+   ============================================================ */
+
+/* ─── ROLE SELECTOR (pantalla de inicio) ────────────────────── */
+#role-selector {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(28,46,86,0.7) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(224,168,48,0.08) 0%, transparent 60%),
+    var(--navy-950);
+  padding: 2rem;
+  position: relative; overflow: hidden;
+}
+
+/* Grilla de puntos de fondo */
+#role-selector::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.role-selector-header { text-align: center; margin-bottom: 3rem; position: relative; }
+
+.role-selector-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(224,168,48,0.1);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-full);
+  padding: 0.4rem 1rem;
+  font-size: 0.78rem; font-weight: 600;
+  color: var(--gold-400); letter-spacing: 0.05em; text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.role-selector-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; line-height: 1.1;
+  background: linear-gradient(135deg, #f1f5f9 30%, var(--gold-400));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.75rem;
+}
+
+.role-selector-header p { color: var(--text-secondary); font-size: 1rem; }
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem; max-width: 900px; width: 100%;
+}
+
+.role-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.5rem; text-align: center;
+  cursor: pointer; transition: var(--transition);
+  position: relative; overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+/* Resplandor dorado en hover */
+.role-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent, var(--accent-glow));
+  opacity: 0; transition: var(--transition);
+}
+
+.role-card:hover { border-color: var(--border-gold); transform: translateY(-4px); box-shadow: var(--shadow-gold), var(--shadow-md); }
+.role-card:hover::before { opacity: 1; }
+
+.role-card-icon {
+  width: 64px; height: 64px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; margin: 0 auto 1.25rem; position: relative;
+}
+
+/* Colores de íconos por rol */
+.icon-beneficiario { background: linear-gradient(135deg, #1e3a6b, #254580); }
+.icon-social       { background: linear-gradient(135deg, #065f46, #047857); }
+.icon-scanner      { background: linear-gradient(135deg, #581c87, #6d28d9); }
+.icon-reportes     { background: linear-gradient(135deg, #164e63, #0369a1); }
+.icon-admin        { background: linear-gradient(135deg, #7f1d1d, #991b1b); }
+
+.role-card h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary); }
+.role-card p  { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+
+.role-card-badge {
+  position: absolute; top: 1rem; right: 1rem;
+  background: var(--gold-500); color: var(--navy-900);
+  font-size: 0.65rem; font-weight: 700;
+  padding: 0.2rem 0.5rem; border-radius: var(--radius-full); letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+  .roles-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ─── SCANNER ────────────────────────────────────────────────── */
+.scanner-page { display: flex; flex-direction: column; align-items: center; min-height: 100%; }
+
+.scanner-tabs {
+  display: flex; gap: 0.5rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.35rem; margin-bottom: 1.75rem;
+  flex-wrap: wrap; justify-content: center;
+}
+
+.scanner-tab {
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--radius-sm); border: none;
+  background: transparent; color: var(--text-muted);
+  font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.scanner-tab.active             { background: linear-gradient(135deg, var(--gold-500), var(--gold-400)); color: var(--navy-900); box-shadow: 0 2px 8px rgba(224,168,48,0.25); }
+.scanner-tab:not(.active):hover { background: var(--bg-card-hover); color: var(--text-secondary); }
+
+/* Ventana de escáner */
+.scanner-viewport {
+  width: 280px; height: 280px;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-gold);
+  background: rgba(0,0,0,0.6);
+  position: relative; overflow: hidden;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 0 40px rgba(224,168,48,0.1);
+}
+
+/* Esquinas del marco */
+.scanner-corners  { position: absolute; inset: 0; }
+.scanner-corner   { position: absolute; width: 24px; height: 24px; }
+.scanner-corner.tl { top: 12px;  left: 12px;  border-top: 3px solid var(--gold-400); border-left:  3px solid var(--gold-400); border-radius: 4px 0 0 0; }
+.scanner-corner.tr { top: 12px;  right: 12px; border-top: 3px solid var(--gold-400); border-right: 3px solid var(--gold-400); border-radius: 0 4px 0 0; }
+.scanner-corner.bl { bottom: 12px; left: 12px;  border-bottom: 3px solid var(--gold-400); border-left:  3px solid var(--gold-400); border-radius: 0 0 0 4px; }
+.scanner-corner.br { bottom: 12px; right: 12px; border-bottom: 3px solid var(--gold-400); border-right: 3px solid var(--gold-400); border-radius: 0 0 4px 0; }
+
+/* Línea animada de escaneo */
+.scanner-line {
+  position: absolute; left: 20px; right: 20px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-400), transparent);
+  animation: scanLine 2.5s linear infinite;
+  box-shadow: 0 0 8px var(--gold-400);
+}
+
+.scanner-icon-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 4rem; color: rgba(224,168,48,0.3);
+}
+.scanner-icon-center span { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 500; }
+
+.scanner-result {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 4rem; background: rgba(0,0,0,0.6);
+  animation: fadeInResult 0.3s ease;
+}
+
+/* Input del escáner */
+.scanner-input-group { display: flex; gap: 0.75rem; width: 100%; max-width: 380px; margin: 0 auto; }
+.scanner-input-group .form-control { font-size: 1.1rem; font-weight: 600; text-align: center; letter-spacing: 0.1em; }
+
+/* Teclado numérico para DNI */
+.dni-keypad {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem; max-width: 240px; margin: 1rem auto;
+}
+.dni-keypad button {
+  aspect-ratio: 1; border-radius: var(--radius-md);
+  border: 1px solid var(--border-color); background: var(--bg-card);
+  color: var(--text-primary); font-size: 1.1rem; font-weight: 700;
+  font-family: var(--font-display); cursor: pointer; transition: var(--transition);
+}
+.dni-keypad button:hover          { background: var(--bg-card-hover); border-color: var(--border-gold); color: var(--gold-400); }
+.dni-keypad button.clear          { color: var(--rose); }
+.dni-keypad button.enter          { background: linear-gradient(135deg, var(--gold-500), var(--gold-400)); color: var(--navy-900); border-color: transparent; }
+.dni-keypad button.enter:hover    { transform: scale(1.05); }
+
+/* ─── RESULTADO DE ASISTENCIA ────────────────────────────────── */
+.attendance-result {
+  width: 100%; max-width: 400px; margin: 0 auto;
+  border-radius: var(--radius-xl); padding: 2rem; text-align: center;
+  border: 1px solid var(--border-color);
+  animation: slideUpModal 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.attendance-result.success { background: rgba(16,185,129,0.07); border-color: rgba(16,185,129,0.25); }
+.attendance-result.error   { background: rgba(244,63,94,0.07);  border-color: rgba(244,63,94,0.25); }
+.attendance-result.warning { background: rgba(245,158,11,0.07); border-color: rgba(245,158,11,0.25); }
+
+.result-icon   { font-size: 3.5rem; margin-bottom: 0.75rem; animation: bounceIn 0.5s ease; }
+.result-title  { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; }
+.result-name   { font-weight: 700; color: var(--text-primary); font-size: 1rem; margin-bottom: 0.25rem; }
+.result-detail { font-size: 0.85rem; color: var(--text-muted); }
+
+/* ─── CALENDARIO ─────────────────────────────────────────────── */
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.cal-nav h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+
+.cal-day-header {
+  text-align: center; font-size: 0.7rem; font-weight: 700;
+  color: var(--text-muted); padding: 0.35rem;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+.cal-day {
+  aspect-ratio: 1; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 600;
+  cursor: default; transition: var(--transition); position: relative;
+}
+.cal-day.today     { border: 1px solid var(--gold-500); color: var(--gold-400); }
+.cal-day.attended  { background: rgba(16,185,129,0.2);  color: #34d399; }
+.cal-day.absent    { background: rgba(244,63,94,0.2);   color: #fb7185; }
+.cal-day.justified { background: rgba(245,158,11,0.2);  color: #fbbf24; }
+.cal-day.other-month { opacity: 0.3; }
+
+.cal-legend       { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.cal-legend-item  { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text-muted); }
+.cal-legend-dot   { width: 10px; height: 10px; border-radius: 2px; }
+.cal-legend-dot.attended  { background: rgba(16,185,129,0.5); }
+.cal-legend-dot.absent    { background: rgba(244,63,94,0.5); }
+.cal-legend-dot.justified { background: rgba(245,158,11,0.5); }
+
+/* ─── GRÁFICOS ───────────────────────────────────────────────── */
+.chart-bars {
+  display: flex; align-items: flex-end; gap: 0.75rem;
+  height: 160px; padding-bottom: 2rem; position: relative;
+}
+.chart-bars::after {
+  content: ''; position: absolute;
+  bottom: 2rem; left: 0; right: 0;
+  height: 1px; background: var(--border-color);
+}
+
+.chart-bar-group {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 0.3rem;
+  height: 100%; justify-content: flex-end;
+}
+
+.chart-bar {
+  width: 100%; border-radius: 4px 4px 0 0;
+  transition: height 1.2s cubic-bezier(0.4,0,0.2,1);
+  min-height: 4px; position: relative; cursor: pointer;
+}
+.chart-bar:hover { filter: brightness(1.2); }
+
+.chart-bar-label {
+  font-size: 0.68rem; color: var(--text-muted); font-weight: 600;
+  text-align: center; white-space: nowrap;
+  position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%);
+}
+
+/* Donut chart wrapper */
+.donut-wrap    { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+.donut-legend  { display: flex; flex-direction: column; gap: 0.65rem; }
+.donut-legend-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; color: var(--text-secondary); }
+.donut-legend-dot  { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+/* ─── QR DISPLAY ─────────────────────────────────────────────── */
+.qr-display {
+  width: 140px; height: 140px; margin: 0 auto;
+  background: white; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px; box-shadow: var(--shadow-gold);
+}
+
+/* ─── TARJETA DE BENEFICIO ───────────────────────────────────── */
+.benefit-card {
+  background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-800) 100%);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-xl); padding: 1.75rem;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow-gold);
+}
+/* Resplandor decorativo */
+.benefit-card::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(224,168,48,0.12), transparent 70%);
+}
+
+.benefit-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; }
+.benefit-chip {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--gold-400); background: rgba(224,168,48,0.1);
+  border: 1px solid var(--border-gold); border-radius: var(--radius-full); padding: 0.25rem 0.7rem;
+}
+.benefit-name   { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.4rem; }
+.benefit-detail { font-size: 0.82rem; color: var(--text-secondary); }
+
+/* ─── NOTIFICACIONES ─────────────────────────────────────────── */
+.notif-item {
+  display: flex; align-items: flex-start; gap: 1rem;
+  padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer; transition: var(--transition);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover {
+  background: rgba(255,255,255,0.02);
+  margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Punto de no leído */
+.notif-item.unread .notif-icon-wrap { position: relative; }
+.notif-item.unread .notif-icon-wrap::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 8px; height: 8px;
+  background: var(--gold-500); border-radius: 50%;
+  border: 2px solid var(--navy-950);
+}
+
+.notif-icon-wrap {
+  width: 40px; height: 40px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.notif-body  { flex: 1; }
+.notif-title { font-weight: 600; color: var(--text-primary); font-size: 0.87rem; margin-bottom: 0.2rem; }
+.notif-msg   { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+.notif-date  { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+/* ─── SCORE RING (indicador circular) ───────────────────────── */
+.score-meter { display: flex; align-items: center; gap: 0.75rem; }
+.score-ring  { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+.score-ring svg { transform: rotate(-90deg); }
+.score-ring-text {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 800;
+  color: var(--text-primary);
+}
