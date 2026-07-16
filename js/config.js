@@ -48,11 +48,15 @@ const REGLAS = {
 // ─── Configuración de navegación por rol ─────────────────────
 // Agrega o quita ítems aquí para modificar el sidebar.
 const NAV_CONFIG = {
+  postulante: [
+    { id: 'post-inicio',     icon: '🏠', label: 'Inicio' },
+    { id: 'post-solicitar',  icon: '📋', label: 'Enviar Postulación' },
+    { id: 'post-estado',     icon: '🔍', label: 'Estado de Trámite' },
+  ],
   beneficiario: [
     { id: 'inicio',          icon: '🏠', label: 'Inicio' },
     { id: 'mi-beneficio',    icon: '🎓', label: 'Mi Beneficio' },
     { id: 'mis-asistencias', icon: '📅', label: 'Mis Asistencias' },
-    { id: 'postulacion',     icon: '📋', label: 'Postulación' },
     { id: 'justificacion',   icon: '📄', label: 'Justificación (FUT)' },
     { id: 'notificaciones',  icon: '🔔', label: 'Notificaciones', badge: true },
   ],
@@ -66,18 +70,6 @@ const NAV_CONFIG = {
     { id: 'reportes',       icon: '📈', label: 'Reportes' },
     { id: 'configuracion',  icon: '⚙️', label: 'Configuración' },
   ],
-  scanner: [
-    { id: 'scanner-qr',      icon: '📷', label: 'Escanear QR' },
-    { id: 'scanner-barcode', icon: '▦',  label: 'Código de Barras' },
-    { id: 'scanner-dni',     icon: '🔢', label: 'Ingresar DNI' },
-    { id: 'scanner-confirm', icon: '✅', label: 'Confirmaciones de Hoy' },
-  ],
-  reportes: [
-    { id: 'rep-pdf',         icon: '📕', label: 'Reportes PDF' },
-    { id: 'rep-excel',       icon: '📗', label: 'Reportes Excel' },
-    { id: 'rep-estadisticas',icon: '📊', label: 'Estadísticas' },
-    { id: 'rep-graficos',    icon: '📈', label: 'Gráficos' },
-  ],
   admin: [
     { id: 'admin-usuarios',  icon: '👤', label: 'Usuarios' },
     { id: 'admin-roles',     icon: '🔑', label: 'Roles' },
@@ -90,10 +82,12 @@ const NAV_CONFIG = {
 
 // ─── Etiquetas de cabecera por vista ─────────────────────────
 const HEADER_LABELS = {
+  'post-inicio':      ['Portal del Postulante',   'Convocatoria Comedor Universitario'],
+  'post-solicitar':   ['Enviar Postulación',      'Formulario único de postulación en línea'],
+  'post-estado':      ['Estado del Trámite',      'Situación actual de tu expediente socioeconómico'],
   'inicio':           ['Inicio',                  'Bienvenido a tu portal estudiantil'],
   'mi-beneficio':     ['Mi Beneficio',            'Detalle de tu beca del comedor universitario'],
   'mis-asistencias':  ['Mis Asistencias',         'Historial completo de asistencias'],
-  'postulacion':      ['Postulación',             'Solicita tu beca del comedor universitario'],
   'justificacion':    ['Justificación (FUT)',      'Presenta tu Formulario Único de Trámite'],
   'notificaciones':   ['Notificaciones',          'Tus alertas y comunicaciones del sistema'],
   'dashboard':        ['Dashboard',               'Resumen operativo del comedor universitario'],
@@ -122,10 +116,9 @@ const HEADER_LABELS = {
 
 // ─── Vista por defecto por rol ────────────────────────────────
 const DEFAULT_VIEW = {
+  postulante:       'post-inicio',
   beneficiario:     'inicio',
   asistenta_social: 'dashboard',
-  scanner:          'scanner-qr',
-  reportes:         'rep-estadisticas',
   admin:            'admin-usuarios',
 };
 

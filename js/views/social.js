@@ -554,61 +554,186 @@ const SocialViews = {
 
   /* ----------------------------------------------------------
      renderAsistencias — Control de asistencias del día
+     Diseño mobile-first con tarjetas y botones P/F
   ---------------------------------------------------------- */
   renderAsistencias(container) {
     const beneficiarios = (DB.get('beneficiarios')||[]).filter(b => b.estado === 'activo');
     const users         = DB.get('users') || [];
     const asistencias   = DB.get('asistencias') || [];
-    const hoy           = getToday();
+    const config        = DB.get('config') || {};
+    const maxAusMes     = config.max_ausencias_mes || 5;
 
-    const asistHoy    = asistencias.filter(a => a.fecha === hoy);
-    const presentes   = asistHoy.length;
-    const total       = beneficiarios.length;
-    const sinRegistrar= Math.max(total - presentes, 0);
-    const pctDia      = total > 0 ? Math.round((presentes / total) * 100) : 0;
+    // Estado de fecha navegable
+    if (!window._attDate) window._attDate = new Date();
+    const currentDate   = window._attDate;
+    const fechaISO      = currentDate.toISOString().split('T')[0];
+    const esHoy         = fechaISO === getToday();
 
-    const rowsHTML = beneficiarios.length === 0
-      ? '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">No hay beneficiarios activos.</td></tr>'
-      : beneficiarios.map(b => {
-          const u = users.find(u => u.id === b.userId) || {};
-          const reg = asistHoy.find(a => a.userId === b.userId || a.beneficiarioId === b.id);
-          const presente = !!reg;
+    // Formatear fecha para display
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const fechaDisplay  = `${currentDate.getDate()} de ${meses[currentDate.getMonth()]}, ${currentDate.getFullYear()}`;
+
+    // Asistencias del día seleccionado
+    const asistDia      = asistencias.filter(a => a.fecha === fechaISO);
+    const presentes     = asistDia.length;
+    const total         = beneficiarios.length;
+    const sinRegistrar  = Math.max(total - presentes, 0);
+    const pctDia        = total > 0 ? Math.round((presentes / total) * 100) : 0;
+
+    // Colores para avatares (rotación por beneficiario)
+    const avatarColors  = ['bg-blue', 'bg-rose', 'bg-green', 'bg-amber', 'bg-violet', 'bg-sky'];
+
+    // Estado de asistencia temporal (para marcar P/F antes de guardar)
+    if (!window._attState) window._attState = {};
+
+    // Inicializar estado: si ya hay registro para ese día, marcarlo como presente
+    beneficiarios.forEach(b => {
+      const key = `${b.id}_${fechaISO}`;
+      if (window._attState[key] === undefined) {
+        const reg = asistDia.find(a => a.userId === b.userId || a.beneficiario_id === b.id || a.usuario_id === b.usuario_id);
+        window._attState[key] = reg ? 'P' : null;
+      }
+    });
+
+    // Generar tarjetas de asistencia
+    const cardsHTML = beneficiarios.length === 0
+      ? '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No hay beneficiarios activos.</p>'
+      : beneficiarios.map((b, idx) => {
+          const u = users.find(u => u.id === b.userId || u.id === b.usuario_id) || {};
+          const ausMes = b.ausencias_mes || 0;
+          const isAlert = ausMes >= (maxAusMes - 1); // Alert when near limit
+          const initial = (u.nombre || '?').split(' ').map(n => n[0]).slice(0, 1).join('').toUpperCase();
+          const lastName = (u.nombre || '—').split(',')[0] || (u.nombre || '—').split(' ').slice(-1)[0];
+          const firstName = (u.nombre || '—').split(',')[1]?.trim() || (u.nombre || '—').split(' ')[0];
+          
+          // Formatear nombre como "Apellido, Nombre"
+          const parts = (u.nombre || '—').split(' ');
+          let displayName;
+          if (parts.length >= 2) {
+            // Intentar formato "Apellido, Nombre"
+            const apellido = parts.slice(-2).join(' ');
+            const nombre = parts.slice(0, -2).join(' ') || parts[0];
+            displayName = parts.length > 2 ? `${parts[parts.length - 2]} ${parts[parts.length - 1]}, ${parts[0]}` : `${parts[1]}, ${parts[0]}`;
+          } else {
+            displayName = u.nombre || '—';
+          }
+
+          const key = `${b.id}_${fechaISO}`;
+          const state = window._attState[key]; // null, 'P', 'F'
+          const colorClass = avatarColors[idx % avatarColors.length];
+
           return `
-            <tr>
-              <td>
-                <div style="display:flex;align-items:center;gap:.75rem;">
-                  <div class="mini-avatar">${(u.nombre||'?').split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
-                  <div>
-                    <div style="font-weight:600;">${u.nombre||'—'}</div>
-                    <div style="font-size:.75rem;color:var(--text-muted);">${u.codigo||'—'}</div>
-                  </div>
+            <div class="attendance-card ${isAlert ? 'alert-card' : ''}" data-ben-id="${b.id}">
+              <div class="att-avatar ${colorClass}">${initial}</div>
+              <div class="att-info">
+                <div class="att-name">${displayName}</div>
+                <div class="att-absences">
+                  Inasistencias del mes: ${isAlert 
+                    ? `<span class="alert-text">${ausMes} (Alerta)</span>` 
+                    : ausMes}
                 </div>
-              </td>
-              <td>${u.carrera||'—'}</td>
-              <td style="font-size:.85rem;">${presente ? reg.hora : '—'}</td>
-              <td style="font-size:.85rem;">${presente ? (reg.metodo || 'QR') : '—'}</td>
-              <td>
-                ${presente
-                  ? '<span class="badge badge-success">✅ Presente</span>'
-                  : '<span class="badge badge-danger">❌ Ausente</span>'}
-              </td>
-            </tr>`;
+              </div>
+              <div class="att-actions">
+                <button class="att-toggle-btn btn-p ${state === 'P' ? 'active' : ''}" 
+                        onclick="window._toggleAtt('${b.id}','${fechaISO}','P')" 
+                        title="Presente">P</button>
+                <button class="att-toggle-btn btn-f ${state === 'F' ? 'active' : ''}" 
+                        onclick="window._toggleAtt('${b.id}','${fechaISO}','F')" 
+                        title="Falta">F</button>
+              </div>
+            </div>`;
         }).join('');
+
+    // Funciones globales para interacción
+    window._toggleAtt = function(benId, fecha, tipo) {
+      const key = `${benId}_${fecha}`;
+      // Si ya está activo el mismo tipo, deseleccionar
+      if (window._attState[key] === tipo) {
+        window._attState[key] = null;
+      } else {
+        window._attState[key] = tipo;
+      }
+      // Re-renderizar solo los botones de esa tarjeta
+      const card = document.querySelector(`[data-ben-id="${benId}"]`);
+      if (card) {
+        const btnP = card.querySelector('.btn-p');
+        const btnF = card.querySelector('.btn-f');
+        const state = window._attState[key];
+        btnP.classList.toggle('active', state === 'P');
+        btnF.classList.toggle('active', state === 'F');
+      }
+    };
+
+    window._guardarAsistencia = function() {
+      let guardados = 0;
+      let yaRegistrados = 0;
+      const fecha = fechaISO;
+
+      beneficiarios.forEach(b => {
+        const key = `${b.id}_${fecha}`;
+        const state = window._attState[key];
+        
+        if (state === 'P') {
+          // Verificar si ya existe registro
+          const yaExiste = DB.get('asistencias').find(a => 
+            (a.beneficiario_id === b.id || a.userId === b.userId || a.usuario_id === b.usuario_id) && a.fecha === fecha
+          );
+          if (!yaExiste) {
+            const hora = new Date().toTimeString().slice(0, 5);
+            DB.add('asistencias', {
+              id: DB.uid('ASI'),
+              beneficiario_id: b.id,
+              usuario_id: b.usuario_id,
+              userId: b.userId || b.usuario_id,
+              fecha: fecha,
+              turno: 'almuerzo',
+              metodo: 'manual',
+              hora: hora,
+              registrado_por: 'asistenta_social'
+            });
+            // Reset ausencias consecutivas
+            DB.update('beneficiarios', b.id, { ausencias_consecutivas: 0 });
+            guardados++;
+          } else {
+            yaRegistrados++;
+          }
+        }
+      });
+
+      if (guardados > 0) {
+        showToast('success', 'Asistencia Guardada', `${guardados} asistencia${guardados > 1 ? 's' : ''} registrada${guardados > 1 ? 's' : ''} correctamente.`);
+      } else if (yaRegistrados > 0) {
+        showToast('info', 'Sin cambios', 'Todas las asistencias marcadas ya estaban registradas.');
+      } else {
+        showToast('warning', 'Sin selección', 'No se marcó ningún estudiante como presente.');
+      }
+      
+      // Limpiar estado y re-renderizar
+      window._attState = {};
+      SocialViews.renderAsistencias(container);
+    };
+
+    window._cambiarFechaAtt = function(delta) {
+      window._attDate.setDate(window._attDate.getDate() + delta);
+      window._attState = {}; // Reset estado al cambiar fecha
+      SocialViews.renderAsistencias(container);
+    };
 
     container.innerHTML = `
       <div class="view-header">
         <div>
           <h1 class="view-title">🍽️ Control de Asistencias</h1>
-          <p class="view-subtitle">Registro del día · ${getTodayDisplay()}</p>
+          <p class="view-subtitle">Registro de asistencia · ${esHoy ? 'Hoy' : fechaDisplay}</p>
         </div>
       </div>
 
+      <!-- Stats (visibles en desktop, compactas en móvil) -->
       <div class="stats-grid stats-grid-3">
         <div class="stat-card">
           <div class="stat-icon" style="background:var(--emerald-light);color:var(--emerald)">✅</div>
           <div class="stat-body">
             <div class="stat-value">${presentes}</div>
-            <div class="stat-label">Registrados hoy</div>
+            <div class="stat-label">Registrados</div>
           </div>
         </div>
         <div class="stat-card">
@@ -622,21 +747,33 @@ const SocialViews = {
           <div class="stat-icon" style="background:var(--sky-light);color:var(--sky)">📊</div>
           <div class="stat-body">
             <div class="stat-value">${pctDia}%</div>
-            <div class="stat-label">Porcentaje del día</div>
+            <div class="stat-label">Porcentaje</div>
           </div>
         </div>
       </div>
 
-      <div class="card" style="margin-top:1.5rem;">
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr><th>Estudiante</th><th>Carrera</th><th>Hora</th><th>Método</th><th>Estado</th></tr>
-            </thead>
-            <tbody>${rowsHTML}</tbody>
-          </table>
-        </div>
+      <!-- Barra de navegación por fecha -->
+      <div class="attendance-date-nav">
+        <button class="date-arrow" onclick="window._cambiarFechaAtt(-1)" title="Día anterior">&lt;</button>
+        <span class="date-text">${fechaDisplay}</span>
+        <button class="date-arrow" onclick="window._cambiarFechaAtt(1)" title="Día siguiente">&gt;</button>
       </div>
+
+      <!-- Lista de tarjetas de asistencia -->
+      <div class="attendance-list">
+        ${cardsHTML}
+      </div>
+
+      <!-- Botón guardar asistencia -->
+      ${esHoy ? `
+        <button class="btn-save-attendance" onclick="window._guardarAsistencia()">
+          Guardar Asistencia
+        </button>
+      ` : `
+        <div style="text-align:center;padding:0.75rem;color:var(--text-muted);font-size:0.85rem;">
+          📅 Visualizando asistencia del ${fechaDisplay}
+        </div>
+      `}
     `;
   },
 
