@@ -637,6 +637,18 @@ const AdminViews = {
               🔒 Cerrar Todas las Sesiones
             </button>
           </div>
+          <div class="danger-divider" style="margin: 1.25rem 0; border-top: 1px dashed var(--slate-200);"></div>
+          <div class="danger-action">
+            <div class="danger-action__info">
+              <strong>Poblar Datos Demo en Supabase</strong>
+              <p class="text-muted text-sm">
+                Inserta registros iniciales de estudiantes, beneficiarios, personal, cuentas de acceso y asistencias en tu base de datos conectada a Supabase.
+              </p>
+            </div>
+            <button class="btn btn-primary" id="btn-seed-supabase" onclick="window.sembrarSupabase()">
+              🌱 Sembrar Supabase
+            </button>
+          </div>
         </div>
       </div>`;
 
@@ -678,6 +690,10 @@ const AdminViews = {
     window.cerrarTodasLasSesiones = function() {
       AuditoriaService.log('Cerrar sesiones', 'Todas las sesiones fueron cerradas forzadamente');
       showToast('🔒 Todas las sesiones han sido cerradas', 'warning');
+    };
+
+    window.sembrarSupabase = function() {
+      seedSupabaseDatabase();
     };
   },
 };

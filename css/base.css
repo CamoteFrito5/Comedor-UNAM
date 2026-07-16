@@ -1,8 +1,5 @@
 /* ============================================================
    base.css — Reset, Tipografía, Animaciones, Scrollbar
-   ============================================================
-   Estilos de nivel DOM: html, body y utilidades globales.
-   No contiene clases de componentes ni de layout.
    ============================================================ */
 
 /* ─── Reset ─────────────────────────────────────────────────── */
@@ -20,81 +17,64 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background: var(--navy-950);
+  background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Scrollbar personalizado ───────────────────────────────── */
-::-webkit-scrollbar        { width: 6px; height: 6px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.1); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+/* ─── Scrollbar personalizado (Light Mode) ──────────────────── */
+::-webkit-scrollbar        { width: 8px; height: 8px; }
+::-webkit-scrollbar-track  { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb  { background: rgba(0, 0, 0, 0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
 
-/* ─── Animaciones globales (@keyframes) ─────────────────────── */
-
-/* Entrada suave hacia arriba */
+/* ─── Animaciones ───────────────────────────────────────────── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Entrada de modal */
 @keyframes fadeInModal {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* Elevación de modal */
 @keyframes slideUpModal {
-  from { transform: translateY(30px) scale(0.97); opacity: 0; }
-  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+  from { transform: translateY(20px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-/* Toast desde la derecha */
 @keyframes slideInToast {
-  from { opacity: 0; transform: translateX(40px); }
+  from { opacity: 0; transform: translateX(30px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* Toast salida */
 @keyframes fadeOutToast {
-  to { opacity: 0; transform: translateX(40px); }
+  to { opacity: 0; transform: translateX(30px); }
 }
 
-/* Rebote de ícono de resultado */
 @keyframes bounceIn {
   0%   { transform: scale(0); }
-  60%  { transform: scale(1.2); }
+  60%  { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 
-/* Resultado de asistencia */
-@keyframes fadeInResult {
-  from { opacity: 0; transform: scale(0.8); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-/* Línea de escáner QR */
 @keyframes scanLine {
   0%   { top: 20px; }
   100% { top: calc(100% - 20px); }
 }
 
-/* Pulso dorado */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224,168,48,0.2); }
-  50%       { box-shadow: 0 0 0 8px rgba(224,168,48,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(30, 132, 73, 0.2); }
+  50%       { box-shadow: 0 0 0 6px rgba(30, 132, 73, 0); }
 }
 
-/* Rotación (spinner) */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* ─── Clases de animación reutilizables ─────────────────────── */
-.page-view  { animation: fadeIn 0.3s ease; }
-.pulse-gold { animation: pulse-glow 2.5s infinite; }
+.page-view  { animation: fadeIn 0.2s ease-out; }
+.pulse-green { animation: pulse-glow 2s infinite; }
 .spin       { animation: spin 0.8s linear infinite; }

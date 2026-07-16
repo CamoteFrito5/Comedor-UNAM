@@ -7,14 +7,11 @@
    ============================================================ */
 
 // ─── Supabase ────────────────────────────────────────────────
-// Reemplaza estos valores cuando tengas el proyecto Supabase.
-// Encuéntralos en: supabase.com → tu proyecto → Settings → API
-const SUPABASE_URL      = 'https://TU-PROYECTO.supabase.co';
-const SUPABASE_ANON_KEY = 'TU_ANON_KEY_AQUI';
+const SUPABASE_URL      = 'https://hrgkvblifsboxrocxqtv.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZ2t2YmxpZnNib3hyb2N4cXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNjc1OTIsImV4cCI6MjA5OTc0MzU5Mn0.7nxUzCvnytwhJ5eM6hjCly97DQai3q91TM64Nu_AGRs';
 
 // Cambia a true cuando Supabase esté configurado.
-// En false, todos los servicios usan seed.js (modo offline).
-const USE_SUPABASE = false;
+const USE_SUPABASE = true;
 
 // ─── Nombres de tablas PostgreSQL ────────────────────────────
 // Si tu schema usa nombres distintos, cámbialos aquí.

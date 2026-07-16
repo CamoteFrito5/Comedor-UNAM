@@ -1,28 +1,25 @@
 /* ============================================================
-   variables.css — Tokens de Diseño / Design Tokens
-   Sistema de Gestión del Comedor Universitario - UNAM Ilo
+   variables.css — Tokens de Diseño (Paleta Institucional UNAM)
    ============================================================
-   ÚNICO lugar donde se definen colores, fuentes, sombras y
-   medidas. Cambiar un valor aquí lo actualiza en toda la app.
+   Reestructurado para un diseño claro, limpio y profesional
+   basado en el Portal de Estudiantes de la UNAM.
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* ─── Paleta institucional UNAM ─────────────────────────── */
-  --navy-950: #050d1a;
-  --navy-900: #0b1329;
-  --navy-800: #111d3d;
-  --navy-700: #1c2e56;
-  --navy-600: #1e3a6b;
-  --navy-500: #254580;
+  /* ─── Paleta de Colores (Portal UNAM) ─────────────────────── */
+  --unam-navy: #002d62;       /* Azul marino institucional */
+  --unam-navy-dark: #001f42;  /* Azul marino más oscuro para headers */
+  --unam-navy-light: #f0f4f8; /* Fondo azul muy claro */
+  
+  --unam-green: #1e8449;      /* Verde institucional (botones/activos) */
+  --unam-green-dark: #145a32; /* Verde oscuro para hover */
+  --unam-green-light: #e8f8f5;/* Verde muy claro para badges/alertas */
 
-  --gold-400: #f0c060;
-  --gold-500: #e0a830;
-  --gold-600: #c99020;
-  --gold-700: #a87010;
-
-  /* ─── Escala de grises ──────────────────────────────────── */
+  --unam-gold: #f0c060;       /* Dorado complementario */
+  
+  /* ─── Escala de grises (Diseño Claro / Light Mode) ────────── */
   --slate-50:  #f8fafc;
   --slate-100: #f1f5f9;
   --slate-200: #e2e8f0;
@@ -34,65 +31,65 @@
   --slate-800: #1e293b;
   --slate-900: #0f172a;
 
-  /* ─── Colores semánticos ────────────────────────────────── */
-  --emerald:       #10b981;
-  --emerald-dark:  #059669;
-  --emerald-light: #d1fae5;
+  /* ─── Colores Semánticos ────────────────────────────────── */
+  --emerald:       #1e8449;
+  --emerald-dark:  #145a32;
+  --emerald-light: #e8f8f5;
 
-  --rose:          #f43f5e;
-  --rose-dark:     #e11d48;
-  --rose-light:    #ffe4e6;
+  --rose:          #e74c3c;
+  --rose-dark:     #c0392b;
+  --rose-light:    #fdedec;
 
-  --amber:         #f59e0b;
-  --amber-dark:    #d97706;
-  --amber-light:   #fef3c7;
+  --amber:         #f39c12;
+  --amber-dark:    #d35400;
+  --amber-light:   #fef9e7;
 
-  --sky:           #0ea5e9;
-  --sky-dark:      #0284c7;
-  --sky-light:     #e0f2fe;
+  --sky:           #2980b9;
+  --sky-dark:      #21618c;
+  --sky-light:     #ebf5fb;
 
-  --violet:        #7c3aed;
-  --violet-light:  #ede9fe;
+  --violet:        #8e44ad;
+  --violet-light:  #f4ecf7;
 
-  /* ─── Aliases semánticos (tema oscuro) ──────────────────── */
-  --bg-primary:    var(--navy-900);
-  --bg-secondary:  var(--navy-800);
-  --bg-card:       rgba(255,255,255,0.03);
-  --bg-card-hover: rgba(255,255,255,0.06);
+  /* ─── Aliases Semánticos (Tema Claro) ─────────────────────── */
+  --bg-primary:    #edf0f5;   /* Fondo general de la página */
+  --bg-secondary:  #ffffff;   /* Fondo de barra lateral y cabeceras secundarias */
+  --bg-card:       #ffffff;   /* Fondo de tarjetas */
+  --bg-card-hover: #f8fafc;
 
-  --border-color:  rgba(255,255,255,0.08);
-  --border-gold:   rgba(224,168,48,0.3);
+  --border-color:  #cbd5e1;   /* Bordes más visibles en light mode */
+  --border-gold:   rgba(240, 192, 96, 0.5);
 
-  --text-primary:   #f1f5f9;
-  --text-secondary: #94a3b8;
+  --text-primary:   #0f172a;   /* Texto principal oscuro */
+  --text-secondary: #475569;   /* Texto secundario */
   --text-muted:     #64748b;
 
-  --accent:      var(--gold-500);
-  --accent-glow: rgba(224,168,48,0.2);
+  --accent:      var(--unam-green);
+  --accent-glow: rgba(30, 132, 73, 0.15);
 
   /* ─── Layout ────────────────────────────────────────────── */
-  --sidebar-w: 260px;
-  --header-h:  64px;
+  --sidebar-w: 240px;
+  --header-h:  80px;         /* Cabecera un poco más alta para albergar info de estudiante */
 
   /* ─── Border-radius ─────────────────────────────────────── */
-  --radius-sm:   8px;
-  --radius-md:   12px;
-  --radius-lg:   16px;
-  --radius-xl:   24px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
   --radius-full: 9999px;
 
-  /* ─── Sombras ───────────────────────────────────────────── */
-  --shadow-sm:   0 1px 3px  rgba(0,0,0,0.4);
-  --shadow-md:   0 4px 16px rgba(0,0,0,0.4);
-  --shadow-lg:   0 8px 32px rgba(0,0,0,0.5);
-  --shadow-gold: 0 0 20px   rgba(224,168,48,0.15);
-  --shadow-glow: 0 0 40px   rgba(224,168,48,0.1);
+  /* ─── Sombras (Claras y Suaves) ─────────────────────────── */
+  --shadow-sm:   0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md:   0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg:   0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-gold: 0 4px 14px 0 rgba(30, 132, 73, 0.1);
+  --shadow-glow: 0 0 20px rgba(30, 132, 73, 0.08);
 
   /* ─── Transiciones ──────────────────────────────────────── */
-  --transition:      0.25s cubic-bezier(0.4,0,0.2,1);
-  --transition-slow: 0.5s  cubic-bezier(0.4,0,0.2,1);
+  --transition:      0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ─── Tipografía ────────────────────────────────────────── */
-  --font-sans:    'Inter',  system-ui, sans-serif;
+  --font-sans:    'Inter', system-ui, sans-serif;
   --font-display: 'Outfit', system-ui, sans-serif;
 }

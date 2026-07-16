@@ -28,18 +28,12 @@ window.addEventListener('DOMContentLoaded', () => {
   console.info('[SGCU] Modo:', USE_SUPABASE ? '🌐 Supabase conectado' : '💾 Offline (seed.js)');
 });
 
-// ─── Selección de rol ─────────────────────────────────────────
-/**
- * Activa un rol y entra al shell principal.
- * Expuesta globalmente para los onclick del HTML.
- * @param {string} role — clave del rol
- */
-function selectRole(role) {
+async function selectRole(role) {
   App.currentRole   = role;
   App.currentUserId = DEMO_USER_BY_ROLE[role] || null;
 
-  // Actualizar info de usuario en sidebar
-  _renderUserInfo(role);
+  // Actualizar info de usuario en sidebar y top-header
+  await _renderUserInfo(role);
 
   // Construir navegación del sidebar
   renderSidebar(role);
@@ -51,7 +45,7 @@ function selectRole(role) {
   shell.style.display = 'flex';
 
   // Navegar a la vista por defecto del rol
-  navigateTo(DEFAULT_VIEW[role]);
+  await navigateTo(DEFAULT_VIEW[role]);
 }
 
 /**
@@ -74,14 +68,25 @@ function goToRoles() {
  * Delega el renderizado al objeto de vistas correspondiente.
  * @param {string} viewId — ID de la vista (ver NAV_CONFIG en config.js)
  */
-function navigateTo(viewId) {
+async function navigateTo(viewId) {
   App.currentView = viewId;
   const container = $('view-container');
 
+  // Si usa Supabase, sincronizar caché remoto antes de renderizar la vista
+  if (typeof syncLocalCacheWithSupabase === 'function' && USE_SUPABASE) {
+    try {
+      await syncLocalCacheWithSupabase();
+    } catch (e) {
+      console.warn('Fallo al sincronizar con Supabase en navegación:', e);
+    }
+  }
+
   // Actualizar cabecera
   const [title, sub] = HEADER_LABELS[viewId] || [viewId, ''];
-  $('header-title').textContent = title;
-  $('header-sub').textContent   = sub;
+  const titleEl = $('header-title');
+  const subEl = $('header-sub');
+  if (titleEl) titleEl.textContent = title;
+  if (subEl) subEl.textContent   = sub;
 
   // Marcar nav item activo en sidebar
   $$('.nav-item').forEach(item => {
@@ -173,11 +178,8 @@ function renderSidebar(role) {
 
 // ─── Privados ─────────────────────────────────────────────────
 
-/** Actualiza la info de usuario en la cabecera del sidebar */
-function _renderUserInfo(role) {
-  const userId = DEMO_USER_BY_ROLE[role];
-  const user   = userId ? DB.getOne('users', userId) : null;
-
+/** Actualiza la info de usuario en la cabecera del sidebar y top header */
+async function _renderUserInfo(role) {
   const ROLE_LABELS = {
     beneficiario:     'Portal Estudiantil',
     asistenta_social: 'Bienestar Social',
@@ -186,9 +188,57 @@ function _renderUserInfo(role) {
     admin:            'Administrador',
   };
 
-  $('sidebar-avatar').textContent    = user?.avatar    || role[0].toUpperCase();
-  $('sidebar-user-name').textContent = user?.nombre    || 'Terminal';
-  $('sidebar-user-role').textContent = ROLE_LABELS[role] || role;
+  const roleTag = $('header-role-tag');
+  if (roleTag) {
+    roleTag.textContent = ROLE_LABELS[role] || role;
+  }
+
+  const studentInfoPanel = $('student-header-info');
+
+  if (role === 'beneficiario') {
+    if (studentInfoPanel) studentInfoPanel.style.display = 'flex';
+    
+    let user = null;
+    if (USE_SUPABASE) {
+      try {
+        const { data: ben } = await BeneficiariosService.getByDNI('72345678'); // DNI de demo María Elena
+        if (ben && ben.usuario) {
+          user = ben.usuario;
+        }
+      } catch (err) {
+        console.warn('Error cargando estudiante de Supabase:', err);
+      }
+    }
+    
+    if (!user) {
+      user = DB.getOne('users', 'USR001'); // Fallback local
+    }
+
+    if (user) {
+      const avatarEl = $('header-student-avatar');
+      const codeEl = $('header-student-code');
+      const careerEl = $('header-student-career');
+      const nameEl = $('header-student-name');
+      
+      if (avatarEl) avatarEl.textContent = user.avatar || 'U';
+      if (codeEl) codeEl.textContent = user.codigo || '—';
+      if (careerEl) careerEl.textContent = (user.carrera || '—').toUpperCase();
+      if (nameEl) nameEl.textContent = (user.nombre || '—').toUpperCase();
+
+      $('sidebar-avatar').textContent    = user.avatar || 'U';
+      $('sidebar-user-name').textContent = user.nombre || '—';
+      $('sidebar-user-role').textContent = 'Estudiante';
+    }
+  } else {
+    if (studentInfoPanel) studentInfoPanel.style.display = 'none';
+
+    const userId = DEMO_USER_BY_ROLE[role];
+    const user   = userId ? DB.getOne('users', userId) : null;
+
+    $('sidebar-avatar').textContent    = user?.avatar    || role[0].toUpperCase();
+    $('sidebar-user-name').textContent = user?.nombre    || 'Terminal';
+    $('sidebar-user-role').textContent = ROLE_LABELS[role] || role;
+  }
 }
 
 /** Actualiza el reloj de la cabecera */

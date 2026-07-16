@@ -139,19 +139,43 @@
   <!-- ── Área principal ─────────────────────────────────────── -->
   <div class="main-content">
 
-    <!-- Cabecera superior — actualizada por app.js → navigateTo() -->
+    <!-- Cabecera superior — Estilo UNAM Portal -->
     <header class="top-header">
-      <div class="header-title">
-        <h2 id="header-title">—</h2>
-        <p  id="header-sub"></p>
+      <div class="top-header-left">
+        <div style="display:flex; align-items:center; gap: 0.75rem;">
+          <!-- SVG Logo UNAM simplificado -->
+          <svg viewBox="0 0 45 45" width="40" height="40" style="border-radius: var(--radius-sm);">
+            <rect width="45" height="45" rx="6" fill="#002d62"/>
+            <circle cx="22.5" cy="22.5" r="18" fill="none" stroke="#f0c060" stroke-width="1.5"/>
+            <text x="22.5" y="27" font-family="'Outfit', sans-serif" font-weight="900" font-size="11" fill="#ffffff" text-anchor="middle">UNAM</text>
+          </svg>
+          <button class="menu-toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">☰</button>
+        </div>
+        
+        <!-- Info del Estudiante (Inyectado por app.js) -->
+        <div id="student-header-info" class="student-header-info" style="display:none">
+          <div class="student-header-photo" id="header-student-avatar">MEQ</div>
+          <div class="student-header-details">
+            <span class="code-line">Código: <span id="header-student-code">2022001</span> - ESTUDIANTE</span>
+            <span class="field-line">Carrera: <strong id="header-student-career">INGENIERÍA DE SISTEMAS</strong></span>
+            <span class="field-line">Nombres: <strong id="header-student-name">MARÍA ELENA QUISPE TORRES</strong></span>
+            <span class="field-line">Modalidad: <strong>CENTRO PREUNIVERSITARIO</strong></span>
+          </div>
+        </div>
       </div>
-      <div class="header-actions">
-        <div class="header-date" id="header-date">—</div>
-        <button class="notif-btn" id="notif-btn"
-                onclick="toggleNotifPanel()" title="Notificaciones">
-          🔔
-          <span class="notif-count" id="notif-count" style="display:none">0</span>
-        </button>
+
+      <div class="top-header-right">
+        <span class="role-tag" id="header-role-tag">Estudiante</span>
+        <div class="header-icons">
+          <!-- Botón de notificaciones integrado -->
+          <button class="header-icon-btn" id="notif-btn" onclick="toggleNotifPanel()" title="Notificaciones" style="position:relative">
+            🔔
+            <span class="notif-count" id="notif-count" style="display:none; position:absolute; top:2px; right:2px; width:14px; height:14px; font-size:0.58rem; background:var(--rose); color:#fff; border-radius:50%; align-items:center; justify-content:center;">0</span>
+          </button>
+          <button class="header-icon-btn" title="Aplicaciones">⠿</button>
+          <button class="header-icon-btn" title="Ayuda">❓</button>
+          <button class="header-icon-btn" onclick="goToRoles()" title="Cambiar de Rol">⎋</button>
+        </div>
       </div>
     </header>
 
