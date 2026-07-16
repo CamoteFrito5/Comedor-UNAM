@@ -6,6 +6,7 @@
 #app-shell {
   display: none;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 #app-shell.visible {
@@ -280,6 +281,8 @@
   display: flex;
   flex-direction: column;
   min-width: 0; /* Evita desbordamiento en grids */
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* Cabecera Secundaria (Opcional - para títulos internos) */
@@ -311,6 +314,7 @@
   flex: 1;
   padding: 1.75rem;
   background: var(--bg-primary);
+  overflow-x: hidden;
 }
 
 /* ─── Grid de tarjetas y columnas ────────────────────────────── */
@@ -324,23 +328,285 @@
   margin-bottom: 1.5rem;
 }
 
-/* ─── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
-  .stats-grid      { grid-template-columns: 1fr 1fr; }
+/* ─── Mobile Header Title (hidden on desktop) ───────────────── */
+.mobile-header-title {
+  display: none;
 }
 
+/* ─── Sidebar Overlay (mobile backdrop) ──────────────────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 250;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.sidebar-overlay.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* ─── Mobile Bottom Navigation ───────────────────────────────── */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #ffffff;
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+  z-index: 200;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--slate-500);
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: var(--radius-sm);
+  min-width: 64px;
+}
+
+.mobile-nav-item .mobile-nav-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.mobile-nav-item.active {
+  color: var(--unam-navy);
+}
+
+.mobile-nav-item.active .mobile-nav-icon {
+  color: var(--unam-navy);
+}
+
+.mobile-nav-item:active {
+  background: var(--slate-100);
+}
+
+/* ─── Responsive: Tablet ─────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 70px;
+  }
+  .sidebar .logo-text,
+  .sidebar .sidebar-user-info,
+  .sidebar .sidebar-footer,
+  .nav-item span:not(.nav-icon) {
+    display: none;
+  }
+  .nav-item {
+    padding: 0.85rem 0;
+  }
+  .nav-item .nav-icon {
+    font-size: 1.4rem;
+  }
+}
+
+/* ─── Responsive: Mobile ─────────────────────────────────────── */
 @media (max-width: 768px) {
+  :root {
+    --header-h: 56px;
+  }
+
+  /* Sidebar: hidden on mobile (replaced by bottom nav) */
   .sidebar {
     position: fixed;
+    left: 0;
+    top: var(--header-h);
     height: calc(100vh - var(--header-h));
+    width: var(--sidebar-w);
     transform: translateX(-100%);
+    z-index: 300;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
   }
+
   .sidebar.mobile-open {
     transform: translateX(0);
     box-shadow: var(--shadow-lg);
   }
+
+
+
+  /* Header: compact mobile */
+  .top-header {
+    height: var(--header-h);
+    padding: 0 1rem;
+  }
+
   .student-header-info {
-    display: none; /* Ocultar detalles del estudiante en pantallas muy pequeñas */
+    display: none;
+  }
+
+  .top-header-right .role-tag {
+    display: none;
+  }
+
+  .header-icons .header-icon-btn:not(#notif-btn) {
+    display: none;
+  }
+
+  /* Mobile header title */
+  .mobile-header-title {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.5rem;
+  }
+
+  .mobile-header-title .mobile-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+
+  .mobile-header-title .mobile-subtitle {
+    font-size: 0.68rem;
+    color: var(--slate-300);
+    font-weight: 500;
+  }
+
+  /* Bottom nav: visible on mobile */
+  .mobile-bottom-nav {
+    display: flex;
+  }
+
+  /* Content: add bottom padding for bottom nav */
+  .page-content {
+    padding: 1rem;
+    padding-bottom: calc(64px + 1rem);
+  }
+
+  /* Grids: single column on mobile */
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Cards: tighter padding */
+  .card {
+    padding: 1rem;
+  }
+
+  .stat-card {
+    padding: 0.85rem;
+  }
+
+  /* Form rows single column */
+  .form-row {
+    grid-template-columns: 1fr;
   }
 }
+
+/* ─── Responsive: Small phones ───────────────────────────────── */
+@media (max-width: 375px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-content {
+    padding: 0.75rem;
+    padding-bottom: calc(64px + 0.75rem);
+  }
+}
+
+/* ─── AUTHENTICATION (Login & Register Form Styles) ──────────── */
+.auth-container {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  display: none;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--unam-navy);
+}
+
+.auth-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.auth-link {
+  color: var(--unam-green);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.auth-btn-back {
+  background: transparent;
+  border: none;
+  color: var(--slate-500);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  align-self: flex-start;
+}
+
+.auth-btn-back:hover {
+  color: var(--unam-navy);
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 1.5rem;
+    max-width: calc(100vw - 2rem);
+  }
+}
+

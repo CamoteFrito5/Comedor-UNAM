@@ -17,7 +17,7 @@ const BeneficiarioViews = {
 
   // ─── Inicio ─────────────────────────────────────────────────
   renderInicio(container) {
-    const fd   = getUserFullData('USR001');
+    const fd   = getUserFullData(App.currentUserId);
     const user = fd.user;
     const ben  = fd.beneficiario;
     const asis = fd.asistencias;
@@ -116,7 +116,7 @@ const BeneficiarioViews = {
 
   // ─── Mi Beneficio ────────────────────────────────────────────
   renderMiBeneficio(container) {
-    const fd   = getUserFullData('USR001');
+    const fd   = getUserFullData(App.currentUserId);
     const user = fd.user;
     const ben  = fd.beneficiario;
     const consec = ben?.ausencias_consecutivas ?? 0;
@@ -216,7 +216,7 @@ const BeneficiarioViews = {
 
   // ─── Mis Asistencias ─────────────────────────────────────────
   renderMisAsistencias(container) {
-    const fd   = getUserFullData('USR001');
+    const fd   = getUserFullData(App.currentUserId);
     const asis = fd.asistencias;
     const aus  = fd.ausencias;
 
@@ -285,7 +285,7 @@ const BeneficiarioViews = {
 
   // ─── Postulación ─────────────────────────────────────────────
   renderPostulacion(container) {
-    const fd   = getUserFullData('USR001');
+    const fd   = getUserFullData(App.currentUserId);
     const user = fd.user;
 
     container.innerHTML = `
@@ -389,7 +389,7 @@ const BeneficiarioViews = {
 
   // ─── Justificación (FUT) ─────────────────────────────────────
   renderJustificacion(container) {
-    const fd       = getUserFullData('USR001');
+    const fd       = getUserFullData(App.currentUserId);
     const ben      = fd.beneficiario;
     const aus      = fd.ausencias.filter(a => !a.justificado);
     const jusList  = fd.justificaciones.sort((a,b) => b.fecha_solicitud.localeCompare(a.fecha_solicitud));
@@ -479,11 +479,12 @@ const BeneficiarioViews = {
   },
 
   // ─── Notificaciones ──────────────────────────────────────────
-  renderNotificaciones(container) {
-    const { data: notifs } = NotificacionesService.getByUsuario
-      ? { data: DB.get('notificaciones').filter(n => n.usuario_id === 'USR001').sort((a,b) => b.fecha.localeCompare(a.fecha)) }
-      : { data: [] };
-
+  async renderNotificaciones(container) {
+    const req = typeof USE_SUPABASE !== 'undefined' && USE_SUPABASE
+      ? await NotificacionesService.getByUsuario(App.currentUserId)
+      : { data: DB.get('notificaciones').filter(n => n.usuario_id === App.currentUserId).sort((a,b) => b.fecha.localeCompare(a.fecha)) };
+    
+    const notifs = req.data;
     const unreadCount = notifs.filter(n => !n.leido).length;
 
     const tipoConfig = {
@@ -526,13 +527,13 @@ const BeneficiarioViews = {
 
     window.markRead = async function(id) {
       await NotificacionesService.marcarLeido(id);
-      BeneficiarioViews.renderNotificaciones(container);
+      await BeneficiarioViews.renderNotificaciones(container);
     };
 
     window.markAllRead = async function() {
-      await NotificacionesService.marcarTodasLeidas('USR001');
+      await NotificacionesService.marcarTodasLeidas(App.currentUserId);
       showToast('success', 'Listo', 'Todas las notificaciones marcadas como leídas.');
-      BeneficiarioViews.renderNotificaciones(container);
+      await BeneficiarioViews.renderNotificaciones(container);
     };
   },
 };

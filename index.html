@@ -47,40 +47,34 @@
      Se oculta al seleccionar un rol. Visible al volver con
      goToRoles() desde el botón del sidebar.
      ════════════════════════════════════════════════════════════ -->
-<section id="role-selector" style="display:flex">
+<section id="role-selector" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
 
-  <div class="role-selector-header">
+  <div class="role-selector-header" id="role-selector-header">
     <div class="role-selector-badge">🍽️ &nbsp; Sistema de Gestión — Comedor Universitario</div>
     <h1>Universidad Nacional<br>de Moquegua</h1>
     <p>Filial Ilo &nbsp;·&nbsp; Semestre 2026-I &nbsp;·&nbsp; Selecciona tu perfil de acceso</p>
   </div>
 
-  <div class="roles-grid">
-    <div class="role-card" onclick="selectRole('beneficiario')" id="role-card-beneficiario">
-      <div class="role-card-icon icon-beneficiario">🎓</div>
-      <h3>Beneficiario</h3>
-      <p>Portal del estudiante con beneficio del comedor universitario</p>
+  <div class="roles-grid" id="roles-grid">
+    <div class="role-card" onclick="showAuthForm('postulante')" id="role-card-postulante">
+      <div class="role-card-icon icon-beneficiario" style="background: linear-gradient(135deg, var(--sky), var(--sky-dark));">📝</div>
+      <h3>Postulante</h3>
+      <p>Envío de postulación a beca alimentaria y consulta de trámite</p>
       <div class="role-card-badge">Estudiante</div>
     </div>
-    <div class="role-card" onclick="selectRole('asistenta_social')" id="role-card-social">
+    <div class="role-card" onclick="showAuthForm('beneficiario')" id="role-card-beneficiario">
+      <div class="role-card-icon icon-beneficiario">🎓</div>
+      <h3>Beneficiario</h3>
+      <p>Portal de asistencias, código QR y justificación de faltas</p>
+      <div class="role-card-badge">Estudiante</div>
+    </div>
+    <div class="role-card" onclick="showAuthForm('asistenta_social')" id="role-card-social">
       <div class="role-card-icon icon-social">👩‍💼</div>
-      <h3>Asistenta Social</h3>
+      <h3>Asistente Social</h3>
       <p>Gestión de beneficiarios, postulantes y justificaciones</p>
       <div class="role-card-badge">BIENESTAR</div>
     </div>
-    <div class="role-card" onclick="selectRole('scanner')" id="role-card-scanner">
-      <div class="role-card-icon icon-scanner">📷</div>
-      <h3>Terminal de Registro</h3>
-      <p>Registro de asistencia por QR, código de barras o DNI</p>
-      <div class="role-card-badge">Terminal</div>
-    </div>
-    <div class="role-card" onclick="selectRole('reportes')" id="role-card-reportes">
-      <div class="role-card-icon icon-reportes">📊</div>
-      <h3>Portal de Reportes</h3>
-      <p>Estadísticas, gráficos e informes en PDF y Excel</p>
-      <div class="role-card-badge">Reportes</div>
-    </div>
-    <div class="role-card" onclick="selectRole('admin')" id="role-card-admin">
+    <div class="role-card" onclick="showAuthForm('admin')" id="role-card-admin">
       <div class="role-card-icon icon-admin">🛡️</div>
       <h3>Administrador</h3>
       <p>Gestión de usuarios, roles, permisos y respaldos del sistema</p>
@@ -88,7 +82,42 @@
     </div>
   </div>
 
-  <p style="margin-top:3rem;font-size:0.75rem;color:var(--text-muted);text-align:center">
+  <!-- Formulario de Autenticación (Login & Registro) -->
+  <div class="auth-container" id="auth-panel">
+    <button class="auth-btn-back" onclick="hideAuthForm()">← Volver a roles</button>
+    <div class="auth-header">
+      <h2 class="auth-title" id="auth-title">Ingreso al Sistema</h2>
+      <p class="auth-subtitle" id="auth-subtitle">Ingresa tus credenciales para acceder</p>
+    </div>
+    
+    <!-- Formulario de Login -->
+    <div id="login-form-container">
+      <div class="form-group">
+        <label class="form-label" id="username-label">Código o DNI</label>
+        <input type="text" id="login-username" class="form-control" placeholder="Ingresa tu usuario">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input type="password" id="login-password" class="form-control" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-top:1.5rem;" onclick="submitLogin()">Ingresar</button>
+      <div class="auth-footer" id="register-footer-msg">
+        ¿No tienes cuenta? <a class="auth-link" onclick="toggleAuthMode('register')">Regístrate aquí</a>
+      </div>
+    </div>
+
+    <!-- Formulario de Registro -->
+    <div id="register-form-container" style="display:none;">
+      <!-- Inputs dinámicos que se inyectan según el rol -->
+      <div id="register-fields"></div>
+      <button class="btn btn-primary btn-block" style="margin-top:1.5rem;" onclick="submitRegister()">Registrarse</button>
+      <div class="auth-footer">
+        ¿Ya tienes cuenta? <a class="auth-link" onclick="toggleAuthMode('login')">Inicia sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top:3rem;font-size:0.75rem;color:var(--text-muted);text-align:center" id="role-selector-footer">
     Universidad Nacional de Moquegua &nbsp;·&nbsp; Filial Ilo &nbsp;·&nbsp; v1.0.0 &nbsp;·&nbsp; 2026
   </p>
 </section>
@@ -149,7 +178,13 @@
             <circle cx="22.5" cy="22.5" r="18" fill="none" stroke="#f0c060" stroke-width="1.5"/>
             <text x="22.5" y="27" font-family="'Outfit', sans-serif" font-weight="900" font-size="11" fill="#ffffff" text-anchor="middle">UNAM</text>
           </svg>
-          <button class="menu-toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">☰</button>
+          <button class="menu-toggle-btn" onclick="toggleMobileSidebar()">☰</button>
+        </div>
+
+        <!-- Mobile Header Title (visible solo en móvil) -->
+        <div class="mobile-header-title">
+          <span class="mobile-title" id="mobile-header-title">Comedor Móvil</span>
+          <span class="mobile-subtitle" id="mobile-header-subtitle">Servicio de Almuerzo</span>
         </div>
         
         <!-- Info del Estudiante (Inyectado por app.js) -->
@@ -185,6 +220,12 @@
     </main>
 
   </div><!-- /main-content -->
+
+  <!-- Bottom Navigation Bar (visible solo en móvil) -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav"></nav>
+
+  <!-- Overlay para cerrar sidebar en móvil -->
+  <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeMobileSidebar()"></div>
 
 </div><!-- /app-shell -->
 
@@ -231,6 +272,7 @@
 <script src="js/components/scanner.js"></script>
 
 <!-- CAPA 4: Vistas -->
+<script src="js/views/postulante.js"></script>
 <script src="js/views/beneficiario.js"></script>
 <script src="js/views/social.js"></script>
 <script src="js/views/scanner.view.js"></script>
