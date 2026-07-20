@@ -42,27 +42,45 @@ const AdminViews = {
     const users = DB.get('users') || [];
 
     const rolLabel = {
-      admin:    'Administrador',
-      social:   'Asistenta Social',
-      terminal: 'Terminal',
-      benef:    'Beneficiario',
+      admin:            'Administrador',
+      dbu:              'Dir. Bienestar',
+      asistenta_social: 'Asistente Social',
+      beneficiario:     'Beneficiario',
+      postulante:       'Postulante',
     };
     const rolBadgeCls = {
-      admin:    'badge-danger',
-      social:   'badge-blue',
-      terminal: 'badge-warning',
-      benef:    'badge-success',
+      admin:            'badge-danger',
+      dbu:              'badge-purple',
+      asistenta_social: 'badge-blue',
+      beneficiario:     'badge-success',
+      postulante:       'badge-warning',
     };
 
     const filas = users.map(u => {
       const initials = (u.nombre || '?').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-      const rol      = u.rol || 'benef';
+      const rol      = u.rol || 'beneficiario';
       const activo   = u.activo !== false;
       const estadoBadge = activo
         ? `<span class="badge badge-success">Activo</span>`
         : `<span class="badge badge-secondary">Inactivo</span>`;
-      const toggleLabel = activo ? '🚫 Desactivar' : '✅ Activar';
+      const toggleLabel = activo ? '🚫 Suspender' : '✅ Activar';
       const toggleCls   = activo ? 'btn-ghost' : 'btn-success';
+
+      // Los Beneficiarios y Postulantes solo se pueden editar, no eliminar
+      const esBeneficiarioOPostulante = (rol === 'beneficiario' || rol === 'postulante');
+      const accionesHTML = `
+        <div class="action-buttons">
+          <button class="btn btn-sm btn-primary" onclick="window._editarUsuario('${u.id}', ${esBeneficiarioOPostulante})">
+            ✏️ Editar
+          </button>
+          <button class="btn btn-sm ${toggleCls}" onclick="window.toggleUserActive('${u.id}', ${activo})">
+            ${toggleLabel}
+          </button>
+          ${esBeneficiarioOPostulante ? '' : `
+            <button class="btn btn-sm btn-danger" onclick="window.eliminarUsuario('${u.id}', '${(u.nombre||'').replace(/'/g,'\\\'')}')">
+              🗑 Eliminar
+            </button>`}
+        </div>`;
 
       return `
         <tr>
@@ -71,24 +89,15 @@ const AdminViews = {
               <div class="avatar avatar--sm">${initials}</div>
               <div>
                 <div class="user-name">${u.nombre || '—'}</div>
-                <div class="text-muted text-sm">${u.correo || '—'}</div>
+                <div class="text-muted text-sm">${u.email || u.correo || '—'}</div>
               </div>
             </div>
           </td>
-          <td>${statusBadge(rolLabel[rol] || rol, rolBadgeCls[rol] || 'badge-info')}</td>
+          <td>${statusBadge ? statusBadge(rolLabel[rol] || rol, rolBadgeCls[rol] || 'badge-info') : `<span class="badge ${rolBadgeCls[rol]||'badge-info'}">${rolLabel[rol]||rol}</span>`}</td>
           <td><code>${u.dni || '—'}</code></td>
-          <td class="text-sm text-muted">${u.correo || '—'}</td>
+          <td class="text-sm text-muted">${u.email || u.correo || '—'}</td>
           <td>${estadoBadge}</td>
-          <td>
-            <div class="action-buttons">
-              <button class="btn btn-sm btn-primary" onclick="window._editarUsuario('${u.id}')">
-                ✏️ Editar
-              </button>
-              <button class="btn btn-sm ${toggleCls}" onclick="window.toggleUserActive('${u.id}', ${activo})">
-                ${toggleLabel}
-              </button>
-            </div>
-          </td>
+          <td>${accionesHTML}</td>
         </tr>`;
     }).join('');
 
@@ -96,16 +105,25 @@ const AdminViews = {
       <div class="view-header">
         <div>
           <h2 class="view-title">👥 Usuarios del Sistema</h2>
-          <p class="view-subtitle">Gestión de cuentas y accesos al Comedor Universitario</p>
+          <p class="view-subtitle">Gestión de cuentas de personal y control de accesos</p>
         </div>
         <button class="btn btn-primary" onclick="openModal('modal-new-user')">
-          ➕ Nuevo Usuario
+          ➕ Nuevo Personal
         </button>
       </div>
 
       ${this._tabsHTML('usuarios')}
 
-      <div class="card mt-4">
+      <!-- Restricción de administración -->
+      <div class="alert alert-warning" style="margin-top:1rem;margin-bottom:0;">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-body">
+          <strong>Restricción de Administrador:</strong> Los registros de <strong>Beneficiarios</strong> y <strong>Postulantes</strong> solo pueden
+          <strong>consultarse y editarse</strong> — no se pueden eliminar ni crear desde este módulo. Su gestión compete exclusivamente al proceso de admisión de la DBU.
+        </div>
+      </div>
+
+      <div class="card mt-3">
         <div class="card-header">
           <h3 class="card-title">Lista de Usuarios</h3>
           <span class="badge badge-info">${users.length} usuarios</span>
@@ -114,7 +132,7 @@ const AdminViews = {
           <table class="data-table">
             <thead>
               <tr>
-                <th>Estudiante</th>
+                <th>Nombre / Correo</th>
                 <th>Rol</th>
                 <th>DNI</th>
                 <th>Correo</th>
@@ -134,18 +152,26 @@ const AdminViews = {
         </div>
       </div>
 
-      <!-- Modal: Nuevo Usuario -->
+      <!-- Modal: Nuevo Usuario de Personal -->
       <div id="modal-new-user" class="modal" style="display:none;">
         <div class="modal-backdrop" onclick="closeModal('modal-new-user')"></div>
         <div class="modal-dialog">
           <div class="modal-header">
-            <h3 class="modal-title">➕ Nuevo Usuario</h3>
+            <h3 class="modal-title">➕ Nuevo Usuario de Personal</h3>
             <button class="modal-close" onclick="closeModal('modal-new-user')">✕</button>
           </div>
           <div class="modal-body">
+            <div class="alert alert-info" style="margin-bottom:1rem;font-size:0.82rem;">
+              <span class="alert-icon">ℹ️</span>
+              <div class="alert-body">Solo se pueden crear cuentas de <strong>personal</strong> (Administrador, DBU, Asistente Social). Los Beneficiarios se crean automáticamente al aprobar su postulación.</div>
+            </div>
             <div class="form-group">
-              <label class="form-label">Nombre completo *</label>
-              <input id="nu-nombre" type="text" class="form-input" placeholder="Ej: María López Torres" />
+              <label class="form-label">Nombres *</label>
+              <input id="nu-nombres" type="text" class="form-input" placeholder="Ej: María" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Apellidos *</label>
+              <input id="nu-apellidos" type="text" class="form-input" placeholder="Ej: López Torres" />
             </div>
             <div class="form-group">
               <label class="form-label">DNI *</label>
@@ -155,15 +181,18 @@ const AdminViews = {
               <label class="form-label">Rol *</label>
               <select id="nu-rol" class="form-select">
                 <option value="">Seleccionar rol…</option>
-                <option value="admin">Administrador</option>
-                <option value="social">Asistenta Social</option>
-                <option value="terminal">Terminal</option>
-                <option value="benef">Beneficiario</option>
+                <option value="admin">Administrador / Técnico</option>
+                <option value="dbu">Dirección de Bienestar Universitario</option>
+                <option value="asistenta_social">Asistente Social</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Correo electrónico</label>
-              <input id="nu-correo" type="email" class="form-input" placeholder="usuario@unajma.edu.pe" />
+              <label class="form-label">Correo electrónico *</label>
+              <input id="nu-correo" type="email" class="form-input" placeholder="usuario@unammoquegua.edu.pe" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contraseña inicial *</label>
+              <input id="nu-contrasena" type="password" class="form-input" placeholder="Mínimo 6 caracteres" />
             </div>
           </div>
           <div class="modal-footer">
@@ -175,46 +204,93 @@ const AdminViews = {
 
     /* ────── Funciones window ────── */
 
-    window.toggleUserActive = function(id, currentlyActive) {
+    window.toggleUserActive = async function(id, currentlyActive) {
+      const newStatus = !currentlyActive;
+      if (USE_SUPABASE && _supabaseClient) {
+        try {
+          await _supabaseClient.from('usuario').update({ id_estado: newStatus ? 1 : 2 }).eq('id_usuario', id.replace('USR',''));
+        } catch (e) { console.warn(e); }
+      }
       const users = DB.get('users') || [];
       const idx   = users.findIndex(u => u.id === id);
-      if (idx === -1) return;
-      users[idx].activo = !currentlyActive;
-      DB.update('users', users);
-      const action = !currentlyActive ? 'activó' : 'desactivó';
-      showToast(`✅ Usuario ${action} correctamente`, 'success');
+      if (idx > -1) users[idx].activo = newStatus;
+      DB._save();
+      const action = newStatus ? 'activó' : 'suspendió';
+      showToast('success', `Usuario ${action}`, 'Estado actualizado correctamente.');
       AdminViews.renderUsuarios(container);
     };
 
-    window._editarUsuario = function(id) {
-      showToast(`✏️ Edición de usuario (ID: ${id}) — próximamente`, 'info');
+    window._editarUsuario = function(id, soloEdicion) {
+      if (soloEdicion) {
+        showToast('info', 'Solo edición', 'Los datos de Beneficiarios/Postulantes solo pueden editarse a través del proceso de admisión de la DBU.');
+      } else {
+        showToast('info', 'Editar usuario', `Edición de usuario ID: ${id} — próximamente.`);
+      }
     };
 
-    window.crearUsuario = function() {
-      const nombre = ($('nu-nombre') || {}).value?.trim();
-      const dni    = ($('nu-dni')    || {}).value?.trim();
-      const rol    = ($('nu-rol')    || {}).value;
-      const correo = ($('nu-correo') || {}).value?.trim();
-
-      if (!nombre) { showToast('⚠️ El nombre es obligatorio', 'warning'); return; }
-      if (!dni || dni.length !== 8 || isNaN(dni)) { showToast('⚠️ DNI inválido (8 dígitos)', 'warning'); return; }
-      if (!rol)  { showToast('⚠️ Selecciona un rol', 'warning'); return; }
-
-      const nuevoUsuario = {
-        id:     'USR-' + Date.now(),
-        nombre,
-        dni,
-        rol,
-        correo,
-        activo: true,
-        creadoEn: new Date().toISOString(),
-      };
-
-      DB.add('users', nuevoUsuario);
-      AuditoriaService.log('Crear usuario', `Nuevo usuario: ${nombre} (${rol})`);
-      showToast(`✅ Usuario "${nombre}" creado correctamente`, 'success');
-      closeModal('modal-new-user');
+    window.eliminarUsuario = function(id, nombre) {
+      if (!confirm(`¿Eliminar el usuario "${nombre}"? Esta acción no se puede deshacer.`)) return;
+      const users = DB.get('users') || [];
+      DB._data.users = users.filter(u => u.id !== id);
+      DB._save();
+      AuditoriaService.log('Eliminar usuario', `Usuario eliminado: ${nombre}`);
+      showToast('success', 'Usuario eliminado', `"${nombre}" fue eliminado del sistema.`);
       AdminViews.renderUsuarios(container);
+    };
+
+    window.crearUsuario = async function() {
+      const nombres    = ($('nu-nombres')    || {}).value?.trim();
+      const apellidos  = ($('nu-apellidos')  || {}).value?.trim();
+      const dni        = ($('nu-dni')        || {}).value?.trim();
+      const rol        = ($('nu-rol')        || {}).value;
+      const correo     = ($('nu-correo')     || {}).value?.trim();
+      const contrasena = ($('nu-contrasena') || {}).value?.trim();
+
+      if (!nombres || !apellidos) { showToast('warning', 'Nombre requerido', 'Ingresa nombres y apellidos.'); return; }
+      if (!dni || dni.length !== 8 || isNaN(dni)) { showToast('warning', 'DNI inválido', 'El DNI debe tener 8 dígitos.'); return; }
+      if (!rol) { showToast('warning', 'Rol requerido', 'Selecciona un rol.'); return; }
+      if (!correo) { showToast('warning', 'Correo requerido', 'Ingresa el correo electrónico.'); return; }
+      if (!contrasena || contrasena.length < 6) { showToast('warning', 'Contraseña débil', 'La contraseña debe tener al menos 6 caracteres.'); return; }
+
+      const ROLE_TO_CARGO = { admin: 3, dbu: 1, asistenta_social: 2 };
+      const ROLE_TO_DB_ID = { admin: 1, dbu: 2, asistenta_social: 3 };
+
+      try {
+        if (USE_SUPABASE && _supabaseClient) {
+          const { data: pers, error: persErr } = await _supabaseClient.from('personal').insert({
+            nombres, apellidos,
+            numero_documento: dni,
+            correo,
+            id_cargo: ROLE_TO_CARGO[rol] || 3,
+            id_estado: 1,
+          }).select().single();
+          if (persErr) throw persErr;
+
+          const { error: usrErr } = await _supabaseClient.from('usuario').insert({
+            contrasena,
+            id_rol:      ROLE_TO_DB_ID[rol] || 3,
+            id_personal: pers.id_personal,
+            id_estado:   1,
+          });
+          if (usrErr) throw usrErr;
+        } else {
+          DB.add('users', {
+            id:     DB.uid('USR'),
+            nombre: `${nombres} ${apellidos}`,
+            rol, dni, email: correo, correo,
+            activo: true,
+            contrasena,
+            avatar: nombres[0] + (apellidos[0] || ''),
+          });
+        }
+
+        AuditoriaService.log('Crear usuario', `Nuevo personal: ${nombres} ${apellidos} (${rol})`);
+        showToast('success', 'Usuario creado', `"${nombres} ${apellidos}" agregado al sistema.`);
+        closeModal('modal-new-user');
+        AdminViews.renderUsuarios(container);
+      } catch (err) {
+        showToast('error', 'Error al crear', err.message);
+      }
     };
   },
 
@@ -222,30 +298,36 @@ const AdminViews = {
      2. renderRoles — Configuración de roles y permisos
   ────────────────────────────────────────────────────────── */
   renderRoles(container) {
-    const roles = DB.get('roles') || [
+    const roles = [
       {
         id: 'admin',
-        nombre: 'Administrador',
-        descripcion: 'Acceso total al sistema. Gestiona usuarios, roles, configuración y respaldos.',
-        permisos: ['usuarios.ver','usuarios.crear','usuarios.editar','roles.gestionar','config.editar','auditoria.ver','reportes.todos','respaldos.gestionar'],
+        nombre: 'Administrador / Técnico',
+        descripcion: 'Acceso total al sistema. Gestiona usuarios del personal, roles, configuración del sistema y respaldos. Puede editar (pero NO eliminar ni crear) registros de Beneficiarios y Postulantes.',
+        permisos: ['usuarios.gestionar','roles.gestionar','config.editar','auditoria.ver','reportes.todos','respaldos.gestionar','beneficiarios.ver','beneficiarios.editar','postulantes.ver','postulantes.editar'],
       },
       {
-        id: 'social',
-        nombre: 'Asistenta Social',
-        descripcion: 'Gestiona beneficiarios, postulantes, justificaciones y reportes.',
-        permisos: ['beneficiarios.ver','beneficiarios.editar','postulantes.gestionar','justificaciones.gestionar','reportes.ver'],
+        id: 'dbu',
+        nombre: 'Dirección de Bienestar Universitario',
+        descripcion: 'Evalúa expedientes de postulantes, aprueba o rechaza postulaciones con comentario obligatorio, gestiona la lista de espera y consulta el padrón de beneficiarios (solo lectura).',
+        permisos: ['postulantes.ver','postulantes.evaluar','beneficiarios.ver','lista_espera.gestionar','reportes.admision'],
       },
       {
-        id: 'terminal',
-        nombre: 'Terminal',
-        descripcion: 'Acceso exclusivo al módulo de escaneo y registro de asistencia.',
-        permisos: ['asistencias.registrar','asistencias.ver'],
+        id: 'asistenta_social',
+        nombre: 'Asistente Social',
+        descripcion: 'Controla la asistencia diaria al comedor, escanea códigos QR de beneficiarios, y gestiona las solicitudes de justificación (FUT) por inasistencia.',
+        permisos: ['asistencias.registrar','asistencias.ver','beneficiarios.ver','justificaciones.gestionar','reportes.ver'],
       },
       {
-        id: 'benef',
+        id: 'beneficiario',
         nombre: 'Beneficiario',
-        descripcion: 'Acceso de solo lectura a su perfil y estado de beneficio.',
-        permisos: ['perfil.ver'],
+        descripcion: 'Estudiante con beca alimentaria activa. Accede a su código QR, historial de asistencias, y puede registrar justificaciones (FUT) por inasistencia.',
+        permisos: ['perfil.ver','asistencias.ver_propio','qr.usar','justificacion.presentar'],
+      },
+      {
+        id: 'postulante',
+        nombre: 'Postulante',
+        descripcion: 'Estudiante en proceso de admisión. Accede públicamente al formulario de postulación y puede consultar el estado de su trámite por DNI. No requiere autenticación.',
+        permisos: ['postulacion.enviar','postulacion.consultar_estado'],
       },
     ];
 

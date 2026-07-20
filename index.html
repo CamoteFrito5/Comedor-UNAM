@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sistema de Gestión del Comedor Universitario — Universidad Nacional de Moquegua, Filial Ilo.">
+  <meta name="description" content="Sistema de Gestión del Comedor Universitario — Universidad Nacional de Moquegua, Filial Ilo. Portal para postulantes, beneficiarios, Bienestar Universitario y Administración.">
   <title>SGCU — Comedor Universitario | UNAM Ilo</title>
 
   <!--
@@ -25,8 +25,6 @@
   <!--
   ══════════════════════════════════════════════════════════════
   SUPABASE CDN (cargado siempre, se activa con USE_SUPABASE)
-  Si no usas Supabase aún, esta línea no genera errores.
-  Cuando conectes tu proyecto, cambia USE_SUPABASE = true en config.js
   ══════════════════════════════════════════════════════════════
   -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -43,9 +41,42 @@
 
 
 <!-- ════════════════════════════════════════════════════════════
+     MODAL: RESTABLECER CONTRASEÑA
+     Accesible desde el formulario de login de todos los módulos
+     con autenticación (no aplica a Postulante).
+     ════════════════════════════════════════════════════════════ -->
+<div id="modal-reset-pwd" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+  <div style="background:var(--surface); border-radius:var(--radius-lg); padding:2rem; max-width:440px; width:90%; box-shadow:var(--shadow-xl); position:relative;">
+    <button onclick="closeResetModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.25rem;cursor:pointer;color:var(--text-muted)">✕</button>
+    <h3 style="margin:0 0 0.35rem; font-size:1.2rem;">🔑 Restablecer Contraseña</h3>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.5rem;">Ingresa tu DNI y el correo registrado en el sistema. Si coinciden, podrás establecer una nueva contraseña.</p>
+    <div class="form-group">
+      <label class="form-label">DNI</label>
+      <input type="text" id="reset-dni" class="form-control" placeholder="Ej: 72345678" maxlength="8">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Correo Electrónico Registrado</label>
+      <input type="email" id="reset-email" class="form-control" placeholder="correo@unammoquegua.edu.pe">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nueva Contraseña</label>
+      <input type="password" id="reset-new-pwd" class="form-control" placeholder="••••••••" minlength="6">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirmar Nueva Contraseña</label>
+      <input type="password" id="reset-confirm-pwd" class="form-control" placeholder="••••••••" minlength="6">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="submitResetPassword()" style="margin-top:1rem;">
+      Actualizar Contraseña
+    </button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════
      PANTALLA DE SELECCIÓN DE ROL
-     Se oculta al seleccionar un rol. Visible al volver con
-     goToRoles() desde el botón del sidebar.
+     Postulante: acceso directo sin login.
+     Resto de módulos: muestra formulario DNI + contraseña.
      ════════════════════════════════════════════════════════════ -->
 <section id="role-selector" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
 
@@ -56,69 +87,80 @@
   </div>
 
   <div class="roles-grid" id="roles-grid">
-    <div class="role-card" onclick="showAuthForm('postulante')" id="role-card-postulante">
-      <div class="role-card-icon icon-beneficiario" style="background: linear-gradient(135deg, var(--sky), var(--sky-dark));">📝</div>
+
+    <!-- ── Postulante: ACCESO DIRECTO sin login ── -->
+    <div class="role-card" onclick="enterAsPostulante()" id="role-card-postulante">
+      <div class="role-card-icon" style="background: linear-gradient(135deg, #0ea5e9, #0369a1);">📝</div>
       <h3>Postulante</h3>
-      <p>Envío de postulación a beca alimentaria y consulta de trámite</p>
-      <div class="role-card-badge">Estudiante</div>
+      <p>Envía tu postulación a la beca alimentaria y consulta el estado de tu trámite con tu DNI</p>
+      <div class="role-card-badge">Acceso Libre</div>
     </div>
+
+    <!-- ── Beneficiario ── -->
     <div class="role-card" onclick="showAuthForm('beneficiario')" id="role-card-beneficiario">
       <div class="role-card-icon icon-beneficiario">🎓</div>
       <h3>Beneficiario</h3>
       <p>Portal de asistencias, código QR y justificación de faltas</p>
       <div class="role-card-badge">Estudiante</div>
     </div>
+
+    <!-- ── Dirección de Bienestar Universitario (DBU) ── -->
+    <div class="role-card" onclick="showAuthForm('dbu')" id="role-card-dbu">
+      <div class="role-card-icon" style="background: linear-gradient(135deg, #7c3aed, #4c1d95);">🏛️</div>
+      <h3>Bienestar Universitario</h3>
+      <p>Evaluación de expedientes, aprobación de postulantes y gestión de la lista de espera</p>
+      <div class="role-card-badge">D.B.U.</div>
+    </div>
+
+    <!-- ── Asistente Social ── -->
     <div class="role-card" onclick="showAuthForm('asistenta_social')" id="role-card-social">
       <div class="role-card-icon icon-social">👩‍💼</div>
       <h3>Asistente Social</h3>
-      <p>Gestión de beneficiarios, postulantes y justificaciones</p>
-      <div class="role-card-badge">BIENESTAR</div>
+      <p>Control de asistencias diarias y gestión de justificaciones (FUT)</p>
+      <div class="role-card-badge">Bienestar</div>
     </div>
+
+    <!-- ── Administrador/Técnico ── -->
     <div class="role-card" onclick="showAuthForm('admin')" id="role-card-admin">
       <div class="role-card-icon icon-admin">🛡️</div>
       <h3>Administrador</h3>
       <p>Gestión de usuarios, roles, permisos y respaldos del sistema</p>
       <div class="role-card-badge">Admin</div>
     </div>
+
   </div>
 
-  <!-- Formulario de Autenticación (Login & Registro) -->
-  <div class="auth-container" id="auth-panel">
+  <!-- Formulario de Autenticación (Login + Olvidé contraseña) -->
+  <!-- Se muestra al hacer clic en cualquier módulo con login  -->
+  <div class="auth-container" id="auth-panel" style="display:none;">
     <button class="auth-btn-back" onclick="hideAuthForm()">← Volver a roles</button>
     <div class="auth-header">
       <h2 class="auth-title" id="auth-title">Ingreso al Sistema</h2>
-      <p class="auth-subtitle" id="auth-subtitle">Ingresa tus credenciales para acceder</p>
+      <p class="auth-subtitle" id="auth-subtitle">Ingresa tu DNI y contraseña para acceder</p>
     </div>
-    
-    <!-- Formulario de Login -->
+
+    <!-- Formulario de Login por DNI -->
     <div id="login-form-container">
       <div class="form-group">
-        <label class="form-label" id="username-label">Código o DNI</label>
-        <input type="text" id="login-username" class="form-control" placeholder="Ingresa tu usuario">
+        <label class="form-label" id="username-label">DNI</label>
+        <input type="text" id="login-username" class="form-control" placeholder="Ej: 72345678" maxlength="15">
       </div>
       <div class="form-group">
         <label class="form-label">Contraseña</label>
-        <input type="password" id="login-password" class="form-control" placeholder="••••••••">
+        <input type="password" id="login-password" class="form-control" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') submitLogin()">
       </div>
       <button class="btn btn-primary btn-block" style="margin-top:1.5rem;" onclick="submitLogin()">Ingresar</button>
-      <div class="auth-footer" id="register-footer-msg">
-        ¿No tienes cuenta? <a class="auth-link" onclick="toggleAuthMode('register')">Regístrate aquí</a>
-      </div>
-    </div>
-
-    <!-- Formulario de Registro -->
-    <div id="register-form-container" style="display:none;">
-      <!-- Inputs dinámicos que se inyectan según el rol -->
-      <div id="register-fields"></div>
-      <button class="btn btn-primary btn-block" style="margin-top:1.5rem;" onclick="submitRegister()">Registrarse</button>
-      <div class="auth-footer">
-        ¿Ya tienes cuenta? <a class="auth-link" onclick="toggleAuthMode('login')">Inicia sesión</a>
+      <div class="auth-footer" style="margin-top:1rem; text-align:center;">
+        <a class="auth-link" onclick="openResetModal()" style="font-size:0.8rem; cursor:pointer;">
+          ¿Olvidaste tu contraseña? Restablécela aquí
+        </a>
       </div>
     </div>
   </div>
 
   <p style="margin-top:3rem;font-size:0.75rem;color:var(--text-muted);text-align:center" id="role-selector-footer">
-    Universidad Nacional de Moquegua &nbsp;·&nbsp; Filial Ilo &nbsp;·&nbsp; v1.0.0 &nbsp;·&nbsp; 2026
+    Universidad Nacional de Moquegua &nbsp;·&nbsp; Filial Ilo &nbsp;·&nbsp; v2.0.0 &nbsp;·&nbsp; 2026
   </p>
 </section>
 
@@ -159,7 +201,7 @@
 
     <!-- Botón volver -->
     <div class="sidebar-footer">
-      <button class="btn-back-roles" onclick="goToRoles()">← Cambiar de rol</button>
+      <button class="btn-back-roles" onclick="goToRoles()">← Cambiar de módulo</button>
     </div>
 
   </aside><!-- /sidebar -->
@@ -183,33 +225,31 @@
 
         <!-- Mobile Header Title (visible solo en móvil) -->
         <div class="mobile-header-title">
-          <span class="mobile-title" id="mobile-header-title">Comedor Móvil</span>
-          <span class="mobile-subtitle" id="mobile-header-subtitle">Servicio de Almuerzo</span>
+          <span class="mobile-title" id="mobile-header-title">Comedor Universitario</span>
+          <span class="mobile-subtitle" id="mobile-header-subtitle">UNAM Ilo</span>
         </div>
-        
+
         <!-- Info del Estudiante (Inyectado por app.js) -->
         <div id="student-header-info" class="student-header-info" style="display:none">
-          <div class="student-header-photo" id="header-student-avatar">MEQ</div>
+          <div class="student-header-photo" id="header-student-avatar">?</div>
           <div class="student-header-details">
-            <span class="code-line">Código: <span id="header-student-code">2022001</span> - ESTUDIANTE</span>
-            <span class="field-line">Carrera: <strong id="header-student-career">INGENIERÍA DE SISTEMAS</strong></span>
-            <span class="field-line">Nombres: <strong id="header-student-name">MARÍA ELENA QUISPE TORRES</strong></span>
-            <span class="field-line">Modalidad: <strong>CENTRO PREUNIVERSITARIO</strong></span>
+            <span class="code-line">DNI: <span id="header-student-code">—</span> · ESTUDIANTE</span>
+            <span class="field-line">Carrera: <strong id="header-student-career">—</strong></span>
+            <span class="field-line">Nombres: <strong id="header-student-name">—</strong></span>
           </div>
         </div>
       </div>
 
       <div class="top-header-right">
-        <span class="role-tag" id="header-role-tag">Estudiante</span>
+        <span class="role-tag" id="header-role-tag">Módulo</span>
         <div class="header-icons">
           <!-- Botón de notificaciones integrado -->
           <button class="header-icon-btn" id="notif-btn" onclick="toggleNotifPanel()" title="Notificaciones" style="position:relative">
             🔔
             <span class="notif-count" id="notif-count" style="display:none; position:absolute; top:2px; right:2px; width:14px; height:14px; font-size:0.58rem; background:var(--rose); color:#fff; border-radius:50%; align-items:center; justify-content:center;">0</span>
           </button>
-          <button class="header-icon-btn" title="Aplicaciones">⠿</button>
           <button class="header-icon-btn" title="Ayuda">❓</button>
-          <button class="header-icon-btn" onclick="goToRoles()" title="Cambiar de Rol">⎋</button>
+          <button class="header-icon-btn" onclick="goToRoles()" title="Cambiar de Módulo">⎋</button>
         </div>
       </div>
     </header>
@@ -248,11 +288,13 @@
        scanner.js   → lógica del escáner de asistencia
 
      CAPA 4 — Vistas (dependen de todo lo anterior)
-       beneficiario.js  → portal del estudiante
-       social.js        → portal de la asistenta social
-       scanner.view.js  → terminal de registro
-       reportes.js      → portal de reportes
-       admin.js         → portal del administrador
+       postulante.js   → portal público del postulante
+       beneficiario.js → portal del estudiante-beneficiario
+       dbu.js          → portal de Dirección de Bienestar
+       social.js       → portal de la asistente social
+       scanner.view.js → terminal de registro QR
+       reportes.js     → portal de reportes
+       admin.js        → portal del administrador
 
      CAPA 5 — Aplicación (depende de todo)
        app.js       → router, sidebar, role selector
@@ -274,6 +316,7 @@
 <!-- CAPA 4: Vistas -->
 <script src="js/views/postulante.js"></script>
 <script src="js/views/beneficiario.js"></script>
+<script src="js/views/dbu.js"></script>
 <script src="js/views/social.js"></script>
 <script src="js/views/scanner.view.js"></script>
 <script src="js/views/reportes.js"></script>

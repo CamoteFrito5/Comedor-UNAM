@@ -1,0 +1,1639 @@
+--- Page 1 ---
+Proyecto Final
+Sistema de Gestión de Beneficiarios del Comedor
+Universitario y Asistencia
+Universidad:UNAM
+Escuela profesional:EPISI
+Filial:Ilo
+Curso:Análisis y Diseño de Sistemas 2
+Nombre del profesor:Honorio Apaza Alanoca
+Integrantes del grupo:
+Marcelo Lerhoy Nina Chunga
+Hipolito Jesus Carlos Huaman
+Koc Lay Phillipe Jilaja Yi
+Eduard Josue Maquera Chura
+Fecha de entrega (Capítulo 1 y 2):23/06/2026
+UNAM – Ilo – 2026
+--- Page 2 ---
+Índice general
+1. Descubrimiento de Producto (Product Discovery): 5
+1.1. Contexto Organizacional: . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.2. Metodología de Descubrimiento: . . . . . . . . . . . . . . . . . . . . . . 7
+1.3. Stakeholders: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+1.4. Modelo AS-IS (Estado Actual): . . . . . . . . . . . . . . . . . . . . . . 9
+1.5. Problemas Identificados: . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+1.6. Usuarios (Personas): . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+1.6.1. Estudiante Beneficiario: . . . . . . . . . . . . . . . . . . . . . . 12
+1.6.2. Asistenta Social: . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+1.6.3. Administrador/Técnico del Sistema: . . . . . . . . . . . . . . . . 13
+1.7. Hipótesis del Producto: . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+1.8. Lean Canvas: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+1.9. Modelo TO-BE (Estado Propuesto): . . . . . . . . . . . . . . . . . . . 16
+1.10. Definición del MVP: . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+1.11. Priorización MoSCoW: . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+1.12. Riesgos: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+1.13. Conclusiones: . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+2. Gestión Ágil y Requisitos: 21
+2.1. Ingeniería de Requisitos Ágil: . . . . . . . . . . . . . . . . . . . . . . . 21
+2.2. Descomposición del Producto (Épicas): . . . . . . . . . . . . . . . . . . 21
+2.3. El Product Backlog (Historias de Usuario): . . . . . . . . . . . . . . . . 22
+2.4. Especificación BDD y Criterios de Aceptación: . . . . . . . . . . . . . . 24
+2.5. Estimación Ágil (Story Points): . . . . . . . . . . . . . . . . . . . . . . 31
+3. Arquitectura del Sistema (Modelo C4): 33
+3.1. Estrategia Arquitectónica: . . . . . . . . . . . . . . . . . . . . . . . . . 33
+3.2. Atributos de Calidad (ISO/IEC 25010): . . . . . . . . . . . . . . . . . . 34
+3.3. Nivel 1: Diagrama de Contexto . . . . . . . . . . . . . . . . . . . . . . 35
+3.3.1. Definición de Elementos de Contexto . . . . . . . . . . . . . . . 37
+3.4. Nivel 2: Diagrama de Contenedores: . . . . . . . . . . . . . . . . . . . . 37
+3.4.1. Definición Técnica de los Contenedores . . . . . . . . . . . . . . 39
+3.5. Registro de Decisiones Arquitectónicas (ADRs) . . . . . . . . . . . . . 39
+3.6. Conclusión del Diseño Arquitectónico . . . . . . . . . . . . . . . . . . . 41
+4. Diseño de Interfaz y Modelo de Datos: 42
+4.1. Diseño de Experiencia de Usuario (UX/UI): . . . . . . . . . . . . . . . 42
+4.1.1. Prototipado de Alta Fidelidad (Wireframe Nativo): . . . . . . . 42
+1
+--- Page 3 ---
+4.2. Modelo de Persistencia (Base de Datos): . . . . . . . . . . . . . . . . . 43
+4.2.1. Diagrama Entidad-Relación (Modelo Lógico): . . . . . . . . . . 43
+4.2.2. Diccionario de Datos: . . . . . . . . . . . . . . . . . . . . . . . . 44
+4.3. Conclusión del Diseño . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+2
+--- Page 4 ---
+Índice de tablas
+1.1. Matriz de Stakeholders del Sistema de Gestión y Control de Asistencia
+del Comedor Universitario . . . . . . . . . . . . . . . . . . . . . . . . . 9
+1.2. Proceso actual del comedor universitario (Modelo AS-IS) . . . . . . . . 11
+1.3. LeanCanvasdelSistemadeGestiónyControldeAsistenciadelComedor
+Universitario . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+1.4. Secuencia Analítica del Proceso Optimizado (TO-BE) . . . . . . . . . . 17
+1.5. Alcance del Producto Mínimo Viable (MVP) . . . . . . . . . . . . . . . 18
+1.6. Matriz de Priorización MoSCoW . . . . . . . . . . . . . . . . . . . . . 19
+2.1. Definición de Épicas del Sistema de Gestión del Comedor Universitario 22
+2.2. Product Backlog Priorizado (MVP y Alcance Ampliado) . . . . . . . . 23
+2.3. Matriz Consolidadora de Estimaciones (Backlog en Story Points) . . . . 32
+3.1. Matriz de Atributos de Calidad del Sistema de Gestión del Comedor
+Universitario . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+3.2. Elementos del Nivel de Contexto . . . . . . . . . . . . . . . . . . . . . 37
+3.3. Infraestructura y Contenedores (Nivel 2) . . . . . . . . . . . . . . . . . 39
+3.4. Registro de Decisiones Arquitectónicas Estratégicas . . . . . . . . . . . 40
+4.1. Estructura de la tablafacultad. . . . . . . . . . . . . . . . . . . . . . 44
+4.2. Estructura de la tablaescuela_profesional. . . . . . . . . . . . . . 44
+4.3. Estructura de la tablaestado. . . . . . . . . . . . . . . . . . . . . . . 44
+4.4. Estructura de la tablacargo. . . . . . . . . . . . . . . . . . . . . . . . 44
+4.5. Estructura de la tablapersonal. . . . . . . . . . . . . . . . . . . . . . 45
+4.6. Estructura de la tablaestudiante. . . . . . . . . . . . . . . . . . . . 45
+4.7. Estructura de la tablaestado_postulacion. . . . . . . . . . . . . . . 45
+4.8. Estructura de la tablapostulacion. . . . . . . . . . . . . . . . . . . . 46
+4.9. Estructura de la tablareporte. . . . . . . . . . . . . . . . . . . . . . 46
+4.10. Estructura de la tablarol. . . . . . . . . . . . . . . . . . . . . . . . . 47
+4.11. Estructura de la tablausuario. . . . . . . . . . . . . . . . . . . . . . 47
+4.12. Estructura de la tablabeneficiario. . . . . . . . . . . . . . . . . . . 47
+4.13. Estructura de la tablaestado_solicitud. . . . . . . . . . . . . . . . 47
+4.14. Estructura de la tablatipo_racion. . . . . . . . . . . . . . . . . . . . 48
+4.15. Estructura de la tablahorario. . . . . . . . . . . . . . . . . . . . . . 48
+4.16. Estructura de la tablasolicitud. . . . . . . . . . . . . . . . . . . . . 48
+4.17. Estructura de la tabladetalle_solicitud. . . . . . . . . . . . . . . . 48
+4.18. Estructura de la tablaasistencia. . . . . . . . . . . . . . . . . . . . 49
+3
+--- Page 5 ---
+Índice de figuras
+1.1. Fase 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+1.2. Fase 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+1.3. Fase 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+1.4. Fase 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+1.5. Fase 2: (Seguimiento de los beneficiarios) . . . . . . . . . . . . . . . . . 8
+1.6. Fase 2: (Entrega de Raciones Sobrantes) . . . . . . . . . . . . . . . . . 8
+1.7. Fase 2: (Control de inasistencias) . . . . . . . . . . . . . . . . . . . . . 9
+1.8. Secuencia Analítica del Proceso Actual (AS-IS) . . . . . . . . . . . . . 10
+1.9. Secuencia Analítica del Proceso Actual (AS-IS) . . . . . . . . . . . . . 10
+1.10. ModeloTO-BE:SistemadeGestiónyControldeAsistenciadelComedor
+Universitario . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+3.1. Diagram de Contexto (C4 Nivel 1) del Sistema de Gestión y Control de
+Asistencia del Comedor Univeristario . . . . . . . . . . . . . . . . . . . 36
+3.2. DiagramadeContenedores(C4Nivel2)delSistemadeGestiónyControl
+de Asistencia del Comedor Universitario . . . . . . . . . . . . . . . . . 38
+4.1. Diagrama Entidad-Relación Lógico del Sistema (Core Operativo). . . . 43
+4
+--- Page 6 ---
+Capítulo 1
+Descubrimiento de Producto (Product
+Discovery):
+1.1 Contexto Organizacional:
+El Comedor Universitario de la Universidad Nacional de Moquegua (UNAM), Filial
+Ilo, es el sector encargado de gestionar raciones de comida y bebida (desayuno y/o
+almuerzo). Este mismo esta bajo la administración del Área de Bienestar Universitario,
+la cual es responsable de planificar las convocatorias, evaluar las solicitudes presentadas
+por los estudiantes, administrar la lista de beneficiarios y supervisar el cumplimiento
+del reglamento interno del servicio alimentario.
+Su servicio se brinda diariamente, atendiendo a los estudiantes que fueron pre-
+viamente seleccionados como beneficiarios. Durante cada turno se realiza el control
+de asistencia, indispensable para verificar el uso adecuado del beneficio y aplicar las
+normas establecidas respecto a las inasistencias.
+El proceso operativo del comedor comprende desde la postulación del estudiante
+hasta el registro diario de asistencias y la generación de reportes administrativos, los
+cuales actualmente dependen en gran medida de procedimientos manuales. Para la
+postulación, es imperativo que el alumno posea alguno de estos requisitos:
+Bajos recursos económicos del estudiante y/o proveedores.
+Buen rendimiento en sus notas.
+Ser estudiante foráneo.
+Actualmente, los procesos para la convocatoria, selección, aceptación y seguimiento
+de asistencia de los beneficiarios de cada semestre son casi completamente manuales
+y en papel, sin un sistema digital práctico que pueda sintetizarlos y administrarlos de
+forma más eficiente. Sin mencionar que, a medida que la UNAM-Ilo crezca y haya más
+estudiantes y beneficiarios, pueden surgir problemas en el seguimiento de la asistencia,
+tales como:
+Suplantación de identidad:La verificación de si el estudiante que firma su
+asistencia y recoge su ración es realmente el beneficiario es un proceso humano
+con posibilidades de fallar.
+5
+--- Page 7 ---
+Saturación en la cola de espera:Para firmar y recoger la ración, lo que ha
+generado demoras en momentos de alta afluencia.
+Esa dependencia de documentación analógica es lo que buscamos solucionar con la
+primera versión de este proyecto, reduciendo dicha dependencia de manera significativa.
+Fase 1: Administrativa y de Selección de beneficiarios (entrada de so-
+licitantes):
+Figura 1.1: Fase 1
+Fase 2: Registro de Asistencia de los Beneficiarios (seguimiento de los
+beneficiarios):
+Figura 1.2: Fase 2
+6
+--- Page 8 ---
+Figura 1.3: Fase 2
+1.2 Metodología de Descubrimiento:
+Para garantizar el rigor metodológico y asegurar que el problema a resolver esté
+sustentado en evidencia empírica, la fase deDescubrimiento de Productose desarrolló
+utilizando los siguientes instrumentos:
+Entrevista a la Asistenta Social:Al ser la principal técnica de levantamiento
+de información, permitió conocer de primera mano el funcionamiento del proce-
+so actual del comedor universitario, identificar las actividades desarrolladas por
+Bienestar Universitario y comprender las dificultades presentes en el registro de
+beneficiarios, el control de asistencias y la administración de inasistencias. La
+información obtenida sirvió como base para definir los requisitos funcionales y no
+funcionales del sistema propuesto.
+Observación de procesos:Análisisen el sitiode los procesos realizados por
+el personal administrativo y los estudiantes durante las fases de convocación y
+seguimiento de beneficiarios.
+Siendo que con la información obtenida pudimos hacer el siguiente pipeline; dividido
+en 2 fases principales:
+Fase 1: Administrativa y de Selección de beneficiarios (entrada de so-
+licitantes):
+7
+--- Page 9 ---
+Figura 1.4: Fase 1
+Fase 2: Registro de Asistencia de los Beneficiarios (seguimiento de los
+beneficiarios):
+Figura 1.5: Fase 2: (Seguimiento de los beneficiarios)
+Figura 1.6: Fase 2: (Entrega de Raciones Sobrantes)
+8
+--- Page 10 ---
+Figura 1.7: Fase 2: (Control de inasistencias)
+1.3 Stakeholders:
+Se ha mapeado a los actores clave del ecosistema, clasificándolos según su descrip-
+ción y nivel de interés en el sistema para gestionar adecuadamente su adopción.
+Tabla 1.1: Matriz de Stakeholders del Sistema de Gestión y Control de Asistencia del
+Comedor Universitario
+Stakeholder Tipo Descripción Interés en el Sistema
+Beneficiarios Primario Estudiantes que reciben el
+beneficio alimentario del
+comedor universitario.
+Registrar su asistencia
+de manera rápida,
+consultar su estado y
+evitar inconvenientes en
+el acceso.
+PostulantesPrimario Estudiantes que solicitan
+acceder al beneficio del
+comedor universitario.
+Conocer el estado de su
+postulación y resultados
+de las convocatorias.
+Asistenta
+Social
+Primario Responsable de la gestión
+administrativa del comedor
+universitario.
+Administrar
+beneficiarios, controlar
+asistencias, gestionar
+faltas y generar
+reportes.
+Personal
+Técnico
+Secundario Responsable del
+mantenimiento y soporte del
+sistema.
+Mantener la
+operatividad y
+disponibilidad de la
+plataforma tecnológica.
+1.4 Modelo AS-IS (Estado Actual):
+Actualmente, el proceso administrativo presenta una grave dependencia de los regis-
+tros manuales y la documentación física para el control de los beneficiados, el registro de
+9
+--- Page 11 ---
+las asistencia y la contabilización de las faltas, ya que esta forma de trabajo incrementa
+la carga administrativa de la Asistenta Social, que a su vez aumenta la probabilidad de
+error humano. En consecuencia, los reportes tardan más en emitirse y son propensos a
+inconsistencias.
+Figura 1.8: Secuencia Analítica del Proceso Actual (AS-IS)
+Figura 1.9: Secuencia Analítica del Proceso Actual (AS-IS)
+10
+--- Page 12 ---
+Tabla 1.2: Proceso actual del comedor universitario (Modelo AS-IS)
+Paso Actor Descripción de la
+actividad
+Soporte / Medio Riesgo identificado
+1 Estudiante
+postulante
+Presenta la
+documentación
+requerida para
+solicitar el beneficio
+alimentario.
+FUT y
+documentos físicos
+Posible extravío de
+documentos o demora
+durante la revisión
+del expediente.
+2 Asistenta Social Revisa y evalúa la
+documentación
+presentada por los
+postulantes.
+Expedientes físicos
+y hojas de cálculo
+El proceso manual
+incrementa el tiempo
+de evaluación y
+favorece errores de
+registro.
+3 Asistenta Social Registra la relación
+de estudiantes
+beneficiarios
+aprobados.
+Listas impresas y
+Microsoft Excel
+Pueden generarse
+inconsistencias entre
+listas impresas y
+archivos digitales.
+4 Estudiante
+beneficiario
+Se identifica para
+acceder al servicio de
+alimentación.
+DNI o código
+universitario y
+lista impresa
+La verificación
+manual ocasiona
+demoras y aumenta
+el riesgo de errores de
+identificación.
+5 Asistenta Social Registra diariamente
+las asistencias e
+inasistencias de los
+beneficiarios.
+Listas físicas y
+Microsoft Excel
+Existe riesgo de
+errores humanos
+durante el conteo y la
+transcripción de la
+información.
+6 Asistenta Social Consolida la
+información y elabora
+reportes
+administrativos.
+Hojas de cálculo La generación manual
+de reportes demanda
+tiempo y es propensa
+a inconsistencias.
+1.5 Problemas Identificados:
+Del análisis del proceso de selección y control de asistencia del comedor universitario
+se identificaron los siguientes problemas:
+1.Registro de asistencias ineficiente:El registro se hace de forma manual;
+el estudiante entrega su carnet o DNI y este debe coincidir con la lista. Esto
+puede generar atención lenta, dificultades al buscar información y posibles errores
+humanos.
+2.Errores en el conteo de inasistencias:Se realiza un conteo manual diario
+y semanal, por lo que un error humano puede generar confusión al considerar
+retirar a un estudiante por exceso de faltas.
+11
+--- Page 13 ---
+3.Problemas en la administración:Los encargados de agregar o retirar a un
+estudiante requieren modificar varias listas manualmente, cometiendo errores al
+contabilizar y careciendo de una herramienta para generar reportes automatiza-
+dos.
+4.Falta de reportes automatizados:Inexistencia de herramientas que recolec-
+ten, procesen y consoliden los datos de asistencias, inasistencias o uso del servicio
+para presentarlos en tableros o documentos estructurados.
+1.6 Usuarios (Personas):
+Las siguientes fichas deUsuarios (Users) Personasfueron construidas a partir de
+los patrones de comportamiento detectados en las entrevistas; siendo los nombres y
+edades solo para poner ejemplo.
+1.6.1 Estudiante Beneficiario:
+Perfil: Luis, 20 años (Estudiante Beneficiario)
+Necesidades Registrar la asistencia rápido y sin colar, consultar las
+faltas acumuladas y estado del beneficio (si se mantiene o
+se pierde) y evitar errores típicos del registro manual.
+Frustraciones1) Esperar en filas para firmar y reclamar su comida.
+2) No saber cuántas faltas tiene acumuladas.
+3) Que otra persona pueda suplantar su identidad.
+4) Tener que acudir personalmente a la asistenta social
+para consultar información básica.
+1.6.2 Asistenta Social:
+Perfil: Carmen, 38 años (Administradora del Comedor)
+Necesidades 1) Gestionar beneficiarios desde una única plataforma.
+2) Registrar, consultar y actualizar beneficiarios
+rápidamente.
+3) Obtener reportes automáticos de asistencias y faltas.
+4) Detectar beneficiarios que incumplen el reglamento.
+Frustraciones1) Contabilizar asistencias y faltas manualmente.
+2) Revisar listas físicas diariamente.
+3) Tener que responder consultas repetitivas de
+estudiantes.
+4) Riesgo de errores humanos durante el control de
+asistencia.
+12
+--- Page 14 ---
+1.6.3 Administrador/Técnico del Sistema:
+Perfil: Adolfo, 27 años (Administrador/Técnico del Sistema)
+Necesidades 1) Se encarga de vigilar el sistema en caso de fallos y
+arreglarlos.
+2) Crear y poner los parametros del sistema; a partir de
+este documento (cuando esté completo).
+3) Mejorar la versión actual del sistema.
+FrustracionesAún ninguna (de momento).
+1.7 Hipótesis del Producto:
+Nuestras hipótesis de producto se enfocan en mitigar directamente los dolores e
+ineficiencias críticas identificados durante el descubrimiento de producto (tanto para
+los estudiantes beneficiarios como para la Asistenta Social):
+1.Hipótesis sobre el dolor de las largas colas de espera:Si implementamos
+un sistema digital de validación mediante códigos ópticos QR e ingreso de DNI,
+reduciremos el tiempo de atención por beneficiario en la cola de entrega de racio-
+nes de 20 minutos de espera promedio a menos de 5 segundos, agilizando el flujo
+diario y eliminando la saturación en horas punta.
+2.Hipótesis sobre la carga administrativa de la Asistenta Social:Si auto-
+matizamos la consolidación diaria de asistencias e inasistencias en una plataforma
+web centralizada, reduciremos a cero las horas de trabajo manual destinadas a la
+transcripción de datos físicos a hojas Excel locales y a la elaboración de reportes
+de fin de mes.
+3.Hipótesis sobre la incertidumbre y consultas presenciales:Si proveemos
+un portal de autoconsulta en línea para el estudiante beneficiario, disminuiremos
+en un 60% el volumen de consultas presenciales en la oficina de Bienestar Uni-
+versitario, ya que los alumnos podrán verificar autónomamente su historial de
+asistencias y el estado de su beneficio desde cualquier dispositivo móvil.
+4.Hipótesis sobre la suplantación de identidad:Si vinculamos la lectura del
+código óptico de la credencial universitaria con la base de datos de matrícula
+vigente y el registro fotográfico del estudiante comensal, eliminaremos el riesgo
+de suplantación de identidad durante el recojo de raciones, garantizando que el
+beneficio sea recibido exclusivamente por el titular aprobado.
+5.Hipótesis sobre el extravío de registros y errores de sanción:Si centrali-
+zamos la persistencia en una base de datos segura y automatizamos las reglas de
+suspensión por inasistencias, erradicaremos la pérdida accidental de hojas físicas
+de asistencia y eliminaremos el 100% de los errores humanos al contabilizar faltas
+y aplicar sanciones según el reglamento del comedor.
+13
+--- Page 15 ---
+1.8 Lean Canvas:
+El modelo estratégico del proyecto se sintetiza en el siguiente lienzo, condensando
+la propuesta de valor y la estructura de costos y beneficios.
+14
+--- Page 16 ---
+Tabla 1.3: Lean Canvas del Sistema de Gestión y Control de Asistencia del Comedor Universi-
+tario
+1. Problema 4. Solución 3. Propuesta de
+Valor
+9. Ventaja
+Injusta
+2. Segmentos
+- Registro de
+asistencias
+ineficiente.
+- Errores humanos
+en el conteo de
+inasistencias.
+- Problemas de
+administración.
+- Falta de reportes
+automatizados.
+- Verificar la
+identidad mediante
+el código del
+estudiante.
+- Gestionar
+automáticamente
+las inasistencias.
+- Usar herramientas
+digitales para
+generar reportes.
+Sistema digital que
+automatiza el
+control de
+beneficiarios,
+asistencia e
+inasistencias del
+comedor
+universitario.
+Diseñado
+específicamente
+según las reglas de
+selección, control,
+lista de espera y
+sanciones de la
+UNAM, reduciendo
+la necesidad de
+adaptar procesos.
+- Personal de
+Bienestar
+Universitario.
+- Asistentes
+sociales.
+- Personal de
+atención del
+comedor.
+- Estudiantes
+Beneficiarios.
+8. Métricas Clave 5. Canales
+- Número de
+asistencias
+registradas.
+- Tiempo de
+atención.
+- Cantidad de
+inasistencias
+detectadas.
+- Reducción de
+errores
+administrativos.
+- Plataforma web
+de la UNAM.
+- Módulos de
+atención en el
+comedor.
+7. Estructura de Costos 6. Flujo de Beneficios (ROI)
+- Desarrollo e implementación del sistema web.
+- Infraestructura tecnológica (servidores UNAM).
+- Mantenimiento, soporte técnico y seguridad.
+- Capacitación del personal y equipos de registro.
+- Reducción de tiempos en el registro de
+asistencia.
+- Disminución de errores administrativos.
+- Optimización del control de
+beneficiarios.
+- Reducción del uso de documentación
+física.
+15
+--- Page 17 ---
+1.9 Modelo TO-BE (Estado Propuesto):
+Se propone implementar un Sistema de Gestión y Control de Asistencia que permita
+automatizarlosprocesosdeidentificacióndebeneficiarios,registrodeasistencia,control
+de faltas y generación de reportes administrativos, centralizando toda la información
+en una base de datos. A continuación, se mostrará el modelo en diagrama y con una
+tabla explicativa
+Figura 1.10: Modelo TO-BE: Sistema de Gestión y Control de Asistencia del Comedor
+Universitario
+16
+--- Page 18 ---
+Tabla 1.4: Secuencia Analítica del Proceso Optimizado (TO-BE)
+Paso Actor Descripción de la Actividad
+Optimizada
+Plataforma /
+Módulo
+1 Estudiante
+postulante
+Registra su solicitud al comedor
+universitario mediante el envío del
+FUT y la documentación requerida. El
+sistema almacena automáticamente la
+información para su evaluación.
+Portal Web (Módulo
+de Postulación).
+2 Asistenta
+Social
+Evalúa digitalmente las solicitudes,
+aprueba o rechaza postulaciones y
+actualiza automáticamente.[Mejora:
+Disminución del tiempo de
+evaluación y reducción de errores
+administrativos.]
+Plataforma Web
+(Módulo de
+Postulación y
+Evaluación).
+3 Estudiante
+beneficiario
+Registra su asistencia utilizando un
+código QR o mediante el ingreso
+manual del DNI. EL sistema actualiza
+automáticamente las asistencias.
+[Mejora: Eliminación del registro
+manual y reducción del tiempo de
+atención.]
+Sistema Web
+(Módulo del Control
+de Asistencia).
+4 Asistenta
+Social
+Consulta reportes automáticos de
+beneficiarios, asistencias e
+inasistencias, así como alertas de
+estudiantes próximos a perder el
+beneficio.[Mejora: Automatización
+de reportes y apoyo a la toma de
+decisiones.]
+Sistema Web
+(Módulo de
+Reportes).
+El modelo TO-BE evidencia las mejoras obtenidas mediante la automatización de
+los procesos del comedor universitario. La digitalización del registro de postulaciones,
+el control de asistencias e inasistencias y la generación automática de reportes reduce
+significativamente los tiempos de atención y la carga administrativa de la Asistenta
+Social. Asimismo, la eliminación de registros físicos disminuye el riesgo de errores hu-
+manos, mejora la confiabilidad de la información y permite a los estudiantes consultar
+oportunamente el estado de su beneficio, contribuyendo a una gestión más eficiente y
+transparente del servicio de comedor universitario.
+1.10 Definición del MVP:
+El Producto Mínimo Viable (MVP) se enfocará en resolver el principal problema
+identificado; el control manual de asistencia y faltas de los beneficiarios.
+17
+--- Page 19 ---
+Tabla 1.5: Alcance del Producto Mínimo Viable (MVP)
+Dentro del Alcance (In Scope) Fuera del Alcance (Out of Scope)
+Registro digital de asistencia:
+Mediante código de estudiante o DNI.
+Registro biométrico:No se usará
+hardware de huella dactilar ni
+reconocimiento facial.
+Gestión de beneficiarios:
+Administración de aprobados y listas de
+espera.
+Aplicación móvil nativa:No se
+desarrollarán apps para Android/iOS en
+esta fase.
+Consulta de estado:De faltas y estado
+del beneficio por parte del estudiante.
+Integración externa:No habrá
+integración con sistemas académicos
+externos por ahora.
+Reportes automáticos:Generación de
+reportes de asistencia y faltas.
+Notificaciones por SMS:Fuera del
+alcance inicial.
+Dashboard administrativo:Para la
+asistenta social.
+Automatización de postulación:El
+proceso de postulación inicial seguirá
+siendo manual.
+Sanciones:Registro de sanciones y
+suspensiones.
+1.11 Priorización MoSCoW:
+Para administrar eficientemente el esfuerzo de desarrollo y mejorar el alcance del
+MVP; los requerimientos se priorizaron de la siguiente manera:
+18
+--- Page 20 ---
+Tabla 1.6: Matriz de Priorización MoSCoW
+Funcionalidad Prioridad
+Gestión de beneficiarios MUST HAVE
+Verificación de identidad mediante código del
+estudiante
+MUST HAVE
+Registro digital de asistencia MUST HAVE
+Control automático de inasistencias MUST HAVE
+Administración de listas de espera y reemplazo
+de beneficiarios
+MUST HAVE
+Generación de reportes básicos de asistencia e
+inasistencias
+MUST HAVE
+Gestión de raciones sobrantes SHOULD HAVE
+Historial de asistencias e inasistencias por
+estudiante
+SHOULD HAVE
+Búsqueda avanzada y filtrado de beneficiarios SHOULD HAVE
+Generación de reportes estadísticos por periodo
+académico
+SHOULD HAVE
+Registro de observaciones y anotaciones
+administrativas
+SHOULD HAVE
+Consulta de vacantes disponibles y movimientos
+en lista de espera
+SHOULD HAVE
+Exportación de reportes en formatos PDF y
+Excel
+COULD HAVE
+Notificaciones para beneficiarios y
+administradores
+COULD HAVE
+Consultar la información desde dispositivos
+móviles
+COULD HAVE
+Reconocimiento facial o biométrico para
+identificación
+WON’T HAVE
+1.12 Riesgos:
+En esta fase se identifican los riesgos inherentes a la adopción institucional del
+producto:
+1.Suplantación de identidad:Al utilizar únicamente el código o DNI, existe
+la posibilidad de que un estudiante registre la asistencia de otro.Mitigación:
+Supervisión visual del personal del comedor.
+2.Fallos del sistema o pérdida de conexión:Una caída del servicio podría
+19
+--- Page 21 ---
+impedir el registro de asistencias.Mitigación: Protocolos de registro temporal en
+papel y sincronización posterior.
+3.Pérdida o corrupción de datos:Fallas en la base de datos.Mitigación: Im-
+plementación de respaldos (backups) automáticos diarios.
+4.Errores en el registro inicial de beneficiarios:Carga de datos incorrectos.
+Mitigación: Proceso de validación y depuración de la base de datos antes del
+lanzamiento.
+5.Resistencia al cambio por parte del personal:Acostumbrados a procesos
+manuales.Mitigación: Capacitación intensiva y acompañamiento durante las pri-
+meras semanas.
+6.Dependencia de una sola persona:La gestión recae en la asistenta social.
+Mitigación: Creación de perfiles de administrador secundario con permisos limi-
+tados.
+7.Problemas de capacitación de los estudiantes:Desconocimiento del nuevo
+sistema.Mitigación: Carteles informativos y guías rápidas en el comedor.
+8.Incremento temporal en los tiempos de atención:Durante la etapa inicial
+de implementación.Mitigación: Refuerzo de personal en los puntos de atención
+durante la fase de transición.
+1.13 Conclusiones:
+La fase deDescubrimiento de Productonós permitió identificar con claridad que
+actualmente no hay serios problemas; más alla de lo tardado que es para la Asistenta
+Social pasar las asistencias, faltas y cambios en la lista de beneficiarios, a su compu-
+tadora en excel.
+Con lo que, el sistema a crear buscará minimizar lo máximo posible dicho tiempo;
+ademas de poder registrar a los nuevos solicitantes, dar el estado (si fue aceptado como
+beneficiario o no) de estos y de los beneficiarios (durante el transcurso del semestre) y
+dar reportes generales sobre lo anterior.
+20
+--- Page 22 ---
+Capítulo 2
+Gestión Ágil y Requisitos:
+2.1 Ingeniería de Requisitos Ágil:
+A diferencia de los modelos tradicionales en cascada, donde los requerimientos se
+congelan en un documento monolítico al inicio del proyecto y rara vez se ajustan a la
+realidadoperativa,elproyectodelSistemadeGestióndelComedorUniversitario
+adopta un enfoque de especificación ágil.
+Estemodelopermitequelosrequerimientosevolucionenconformeseadquieremayor
+conocimiento del negocio, especialmente considerando que los procesos administrativos
+del comedor universitario tienen particularidades estacionales (convocatorias semestra-
+les, periodos de evaluación, listas de espera dinámicas) que requieren flexibilidad.
+El sistema se divide en módulos de alto nivel (Épicas) que agrupan funcionalidades
+relacionadas, las cuales luego se refinan enHistorias de Usuario(US) comprobables,
+medibles y entregables en ciclos cortos de desarrollo (Sprints).
+Este capítulo traduce el alcance del Producto Mínimo Viable (MVP) definido en el
+Product Discoveryhacia unProduct Backlogpriorizado, listo para ser consumido por
+el equipo de desarrollo. Las historias de usuario se redactan desde la perspectiva de los
+actores identificados (estudiantes beneficiarios, asistenta social, personal del comedor)
+y cumplen con los criteriosINVEST:
+Independientes: Cada historia puede desarrollarse sin depender de otras.
+Negociables: Los detalles pueden ajustarse durante el desarrollo.
+Valiosas: Cada historia entrega valor tangible al usuario final.
+Estimables: El equipo puede estimar el esfuerzo requerido.
+Small (Pequeñas): Pueden completarse en un solo Sprint.
+Testeables: Se pueden definir criterios de aceptación claros.
+2.2 Descomposición del Producto (Épicas):
+Las Épicas representan funcionalidades de alto nivel que agrupan procesos rela-
+cionados dentro del sistema. Estas permiten organizar el desarrollo del producto en
+21
+--- Page 23 ---
+módulos funcionales coherentes y facilitan la planificación de los futuros Sprints. Para
+la primera versión del Sistema de Gestión de Beneficiarios del Comedor Universitario
+se han identificado cinco (5) Épicas principales, alineadas con los procesos operativos
+del comedor y los objetivos definidos durante el descubrimiento del producto.
+Tabla 2.1: Definición de Épicas del Sistema de Gestión del Comedor Universitario
+ID Nombre de la
+Épica
+Descripción y Propósito Actor Principal
+E01 Gestión de
+Usuarios y
+Seguridad
+Autenticación de los usuarios,
+administración de roles y control
+de acceso a las funcionalidades del
+sistema según el perfil asignado.
+Administrador
+(Técni-
+co)/Asistenta
+Social
+E02Gestión de
+Beneficiarios
+Registrar, consultar, actualizar y
+administrar la información de los
+estudiantes beneficiarios, así como
+gestionar altas, bajas y listas de
+espera.
+Asistenta Social
+E03 Control de
+Asistencia
+Validación de la identidad del
+estudiante, registro de su
+asistencia diaria y mantener un
+historial actualizado de las
+participaciones en el comedor.
+Estudiante
+E04Gestión de
+Inasistencias y
+Permanencia
+Automatización del cálculo de
+faltas, aplicar las reglas de
+permanencia establecidas por
+Bienestar Universitario y generar
+alertas sobre posibles
+suspensiones.
+Asistenta Social
+E05 Reportes y
+Monitoreo
+Genera reportes de asistencia,
+inasistencias, beneficiarios activos,
+listas de espera y estadísticas
+necesarias para la toma de
+decisiones administrativas.
+Asistenta Social
+y/o Administra-
+dor/Técnico
+2.3 El Product Backlog (Historias de Usuario):
+Las Épicas se han descompuesto en Historias de Usuario (US), redactadas desde
+la perspectiva del usuario final utilizando el formato estándar de la industria:“Como
+[Actor], quiero [Acción], para [Beneficio o Valor de negocio]”.
+Todas las historias aquí presentadas cumplen con los criteriosINVEST(Indepen-
+dientes, Negociables, Valiosas, Estimables, Pequeñas y Testeables).
+22
+--- Page 24 ---
+Tabla 2.2: Product Backlog Priorizado (MVP y Alcance Ampliado)
+ID US Épica Historia de Usuario (Narrativa) Prioridad
+US-01 E03 Comobeneficiario del comedor,quiero
+registrar mi asistencia con mi código o DNI,
+pararecibir mi ración de forma rápida y
+segura.
+Must Have
+US-02 E03Comoestudiante beneficiario,quiero
+consultar mi estado de faltas y condición
+actual,parasaber si mi beneficio se encuentra
+en riesgo.
+Must Have
+US-03 E04 Comoasistenta social,quieroque el sistema
+contabilice automáticamente las inasistencias,
+paraevitar errores de cálculo y aplicar el
+reglamento.
+Must Have
+US-04 E02Comoasistenta social,quieroincorporar
+automáticamente estudiantes de la lista de
+espera,paracubrir las vacantes de bajas.
+Must Have
+US-05 E02 Comoestudiante postulante,quiero
+consultar el estado de mi trámite en línea,
+paraconocer los resultados sin ir a Bienestar
+Universitario.
+Must Have
+US-06 E02Comoestudiante postulante,quieroenviar
+mi FUT y documentos sustentatorios en
+formato digital,pararegistrar mi solicitud al
+comedor sin trámites presenciales.
+Must Have
+US-07 E02 Comoasistenta social,quieroevaluar los
+expedientes digitales de los postulantes,para
+seleccionar de manera transparente a los
+beneficiarios.
+Must Have
+US-08 E03Comoestudiante beneficiario,quiero
+visualizar el historial detallado de mis
+asistencias del ciclo,paramantener el control
+autónomo de mi récord.
+Must Have
+US-09 E05 Comoasistenta social,quierogenerar
+reportes mensuales automáticos en PDF de
+raciones y faltas,parala rendición de cuentas
+administrativa.
+Must Have
+23
+--- Page 25 ---
+2.4 Especificación BDD y Criterios de Aceptación:
+Para eliminar la ambigüedad al momento del desarrollo y las pruebas, las Histo-
+rias de Usuario prioritarias se detallan a continuación con sus respectivos criterios de
+aceptación bajo el formato estructuradoGherkin(Dado que, Cuando, Entonces).
+ID: US-01 Registro de Asistencia de Beneficiario
+Narrativa Comobeneficiario del comedor universitario,
+Quieroregistrar mi asistencia utilizando mi código o DNI,
+Pararecibir mi ración de manera rápida y segura.
+Reglas Clave1) Solo los beneficiarios con estado “Activo” pueden registrar su
+asistencia.
+2) Un estudiante solo puede registrar una asistencia por turno
+(desayuno/almuerzo) al día.
+3) El sistema debe admitir lectura por código óptico
+(QR/barras) e ingreso de DNI.
+Criterios de Aceptación (Gherkin)
+Escenario 1: Registro exitoso por lectura de código QR o de barras
+Dado queel estudiante figura como beneficiario en estado “Activo”,
+Cuandoel personal del comedor escanea su código QR o de barras institucional,
+Entoncesel sistema registra la asistencia para el turno actual, muestra el mensaje
+“Asistencia registrada correctamente” con el nombre del alumno, y habilita la entrega
+de su ración.
+Escenario 2: Estudiante no beneficiario o inactivo
+Dado queel estudiante ingresado no figura en el padrón de beneficiarios activos,
+Cuandose lee su código o se introduce su DNI manualmente,
+Entoncesel sistema rechaza el registro, emite una alerta acústica/visual y muestra
+el mensaje “Estudiante no autorizado o inactivo”.
+Escenario 3: Intento de registro duplicado
+Dado queel estudiante ya registró su asistencia durante el mismo turno de servicio,
+Cuandointenta pasar su código por segunda vez,
+Entoncesel sistema bloquea la transacción y muestra el mensaje “Asistencia ya
+registrada para este servicio”.
+24
+--- Page 26 ---
+ID: US-02 Consulta del Estado del Beneficio
+Narrativa Comoestudiante beneficiario,
+Quieroconsultar mi estado de faltas y condición actual,
+Paraconocer oportunamente si mi beneficio se encuentra en
+riesgo.
+Reglas Clave1) El estudiante solo puede visualizar su propia información
+académica de asistencia.
+2) El sistema actualizará el estado y las alertas tras cada cierre
+de turno.
+Criterios de Aceptación (Gherkin)
+Escenario 1: Consulta de estado regular
+Dado queel estudiante beneficiario inició sesión en la plataforma,
+Cuandoaccede a la sección “Mi Beneficio”,
+Entoncesel sistema muestra el estado actual como “Activo” y reporta el conteo de
+faltas consecutivas y alternadas del mes en cero.
+Escenario 2: Alerta preventiva por acumulación de inasistencias
+Dado queel estudiante beneficiario ha acumulado 2 inasistencias consecutivas,
+Cuandoaccede al portal principal,
+Entoncesel sistema muestra una advertencia destacada en color amarillo: “¡Alerta!
+Cuenta con 2 inasistencias consecutivas. Recuerde que 3 consecutivas causan la sus-
+pensión del beneficio.”
+25
+--- Page 27 ---
+ID: US-03 Control Automático de Inasistencias
+Narrativa Comoasistenta social,
+Quieroque el sistema contabilice automáticamente las
+inasistencias,
+Paraevitar errores de cálculo y aplicar correctamente el
+reglamento.
+Reglas Clave1) 3 faltas consecutivas generan la suspensión automática del
+beneficio.
+2) 5 faltas alternadas en el transcurso de un mismo mes generan
+la suspensión.
+3) El procesamiento de inasistencias debe ejecutarse
+automáticamente al finalizar cada servicio.
+Criterios de Aceptación (Gherkin)
+Escenario 1: Registro diario de faltas
+Dado queun beneficiario activo no registró asistencia durante el servicio del día,
+Cuandofinaliza el horario de atención y se cierra el servicio,
+Entoncesel sistema registra automáticamente una falta para dicho alumno y ac-
+tualiza su historial.
+Escenario 2: Suspensión automática del beneficio por faltas consecutivas
+Dado queel estudiante acumula 2 faltas consecutivas en el mes,
+Cuandono registra asistencia al finalizar el siguiente servicio programado,
+Entoncesel sistema registra la 3ra falta consecutiva, cambia su estado a “Suspen-
+dido”, inhabilita su código óptico para futuros turnos y notifica automáticamente a
+la asistenta social para liberar la vacante.
+26
+--- Page 28 ---
+ID: US-04 Reemplazo por Lista de Espera
+Narrativa Comoasistenta social,
+Quieroincorporar automáticamente estudiantes de la lista de
+espera,
+Paracubrir las vacantes generadas por bajas de beneficiarios.
+Reglas Clave1) El sistema solo puede promover alumnos que estén en la lista
+de espera aprobada.
+2) Debe priorizarse el ingreso de estudiantes de la misma escuela
+profesional del alumno saliente.
+Criterios de Aceptación (Gherkin)
+Escenario 1: Reemplazo automático del mismo programa de estudios
+Dado quese oficializa la suspensión de un beneficiario de la carrera de “Ingeniería
+de Sistemas”,
+Cuandoel sistema procesa la vacante liberada,
+Entoncesselecciona al primer postulante apto en lista de espera perteneciente a
+“Ingeniería de Sistemas”, cambia su estado a “Beneficiario Activo”, genera su código
+óptico y le envía una notificación por correo electrónico.
+Escenario 2: Ausencia de postulantes de la misma especialidad
+Dado queno hay postulantes de “Ingeniería de Sistemas” en la lista de espera,
+Cuandose libera la vacante,
+Entoncesel sistema propone al primer estudiante del ranking general de la lista de
+espera y envía una solicitud de confirmación manual a la asistenta social.
+27
+--- Page 29 ---
+ID: US-05 Consulta de Estado de Postulación
+Narrativa Comoestudiante postulante al comedor universitario,
+Quieroconsultar el estado de mi solicitud de beneficio
+alimentario,
+Parasaber si mi expediente fue recibido, se encuentra en
+evaluación, fui seleccionado o me encuentro en lista de espera.
+Reglas Clave1) La consulta requiere únicamente ingresar el DNI o código
+universitario del postulante.
+2) El sistema debe mostrar la fecha del último cambio de estado.
+Criterios de Aceptación (Gherkin)
+Escenario 1: Consulta de expediente en evaluación
+Dado queel postulante ingresó su DNI en el portal de consultas,
+Cuandopresiona el botón “Buscar Solicitud”,
+Entoncesel sistema muestra el mensaje “Estado: En Evaluación” y detalla los do-
+cumentos validados por Bienestar Universitario.
+Escenario 2: Asignación a lista de espera
+Dado queel expediente socioeconómico fue aprobado pero no hay vacantes dispo-
+nibles,
+Cuandoel estudiante consulta su solicitud,
+Entoncesel sistema muestra “Estado: En Lista de Espera” e indica la posición nú-
+mero “12” en la cola de reemplazo.
+28
+--- Page 30 ---
+ID: US-06 Envío de FUT y Documentos de Postulación Digital
+Narrativa Comoestudiante postulante,
+Quieroregistrar mi postulación y subir mi FUT y documentos
+de respaldo en PDF,
+Parapostular al comedor sin presentar carpetas físicas.
+Reglas Clave1) Los documentos deben cargarse únicamente en formato PDF
+con peso máximo de 5MB.
+2) El FUT, ficha socioeconómica y constancia de matrícula son
+requisitos obligatorios para completar el envío.
+Criterios de Aceptación (Gherkin)
+Escenario 1: Carga y envío de documentos exitoso
+Dado queel postulante ha rellenado el formulario socioeconómico digital,
+Cuandoadjunta sus tres archivos PDF obligatorios y hace clic en “Enviar Postula-
+ción”,
+Entoncesel sistema guarda los archivos en el almacenamiento en la nube (Supabase
+Storage), genera un código de trámite y muestra el mensaje “Postulación registrada
+correctamente”.
+Escenario 2: Carga de archivo no válido
+Dado queel postulante está adjuntando sus documentos,
+Cuandointenta subir un archivo en formato de imagen (.PNG) o un PDF que pesa
+8MB,
+Entoncesel sistema bloquea el archivo, muestra un mensaje de error destacando
+que el archivo excede las especificaciones y no permite proceder con el envío.
+ID: US-07 Evaluación y Selección de Postulantes
+Narrativa Comoasistenta social,
+Quieroevaluar las solicitudes digitales de los postulantes,
+Paracalificar su nivel de vulnerabilidad y asignar los cupos
+disponibles.
+Reglas Clave1) El acceso a la evaluación de expedientes está restringido al rol
+de Asistenta Social.
+2) El sistema puntuará automáticamente a los postulantes de
+acuerdo a los criterios declarados (foráneo, quintil de ingresos,
+rendimiento académico).
+Criterios de Aceptación (Gherkin)
+Escenario 1: Aprobación y asignación de código óptico
+Dado quela asistenta social ha verificado los documentos PDF de un postulante y
+validado su puntaje,
+Cuandohace clic en el botón “Aprobar Beneficio”,
+Entoncesel sistema cambia el estado del alumno a “Aprobado”, genera automáti-
+camente su código QR personal de acceso y lo añade a la lista activa del comedor.
+29
+--- Page 31 ---
+ID: US-08 Consulta de Historial de Asistencias
+Narrativa Comoestudiante beneficiario,
+Quierovisualizar el historial detallado de mis asistencias del
+ciclo,
+Parallevar un control preciso de mis asistencias e inasistencias
+y no perder el beneficio.
+Reglas Clave1) La consulta mostrará un formato calendario con marcas de
+colores (verde para asistido, rojo para falta, amarillo para
+justificado).
+2) El historial debe estar disponible de forma interactiva e
+inmediata tras el logueo del estudiante.
+Criterios de Aceptación (Gherkin)
+Escenario 1: Visualización correcta del calendario
+Dado queel estudiante ha iniciado sesión y navega a la sección “Historial de Co-
+medor”,
+Cuandoselecciona el mes en curso,
+Entoncesel sistema carga un calendario interactivo con el conteo acumulado men-
+sual de asistencias (ej. 15), faltas injustificadas (ej. 1) y faltas justificadas (ej. 1).
+ID: US-09 Generación de Reporte Mensual de Asistencias y
+Raciones
+Narrativa Comoasistenta social,
+Quierogenerar reportes mensuales automáticos en PDF de
+raciones y faltas,
+Parala rendición de cuentas administrativa ante la dirección de
+Bienestar Universitario.
+Reglas Clave1) El reporte debe contener gráficos consolidados de raciones
+consumidas y no reclamadas.
+2) Los reportes en PDF deben incluir el membrete de la UNAM
+y campos listos para la firma de la Asistenta Social y del
+Director.
+Criterios de Aceptación (Gherkin)
+Escenario 1: Exportación de reporte mensual en PDF
+Dado quela asistenta social se encuentra en la sección de “Reportes Mensuales”,
+Cuandoselecciona el mes de “Junio 2026” y hace clic en el botón “Exportar Reporte
+PDF”,
+Entoncesel backend compila los datos, procesa los promedios e inasistencias del
+mes, genera un documento PDF formalizado y lo descarga en el equipo local de la
+asistenta social en menos de 3 segundos.
+30
+--- Page 32 ---
+2.5 Estimación Ágil (Story Points):
+En lugar de utilizar estimaciones predictivas orientadas al tiempo (como la métrica
+de horas-hombre o las líneas de código de COCOMO), el equipo de desarrollo del Siste-
+ma de Gestión y Control de Asistencia del Comedor Universitario utilizaStory Points
+mediante la técnica dePlanning Poker. Este enfoque mide elesfuerzo relativo, la
+complejidad algorítmicay laincertidumbrede cada requerimiento utilizando una
+escala de Fibonacci modificada (1, 2, 3, 5, 8, 13).
+1 a 3 puntos:Tareas de baja complejidad técnica y alta certeza (ej. Creación
+del portal de autoconsulta de estado del beneficio del estudiante o el visualizador
+simple del historial).
+5 a 8 puntos:Tareas de complejidad media que involucran integración tran-
+saccional con la base de datos o lógica de negocio (ej. El registro de asistencia
+mediante código QR/DNI con validaciones en tiempo real, o el cargador digital
+de FUT con validación de archivos PDF).
+13 puntos:Tareas de alta complejidad arquitectónica (ej. El motor automático
+para la aplicación de sanciones por inasistencia – 3 consecutivas o 5 alternadas en
+el mes – con control de sincronización diaria y alertas preventivas, o la lógica de
+selección de lista de espera con priorización por carrera). Las historias evaluadas
+en 13 puntos se consideran demasiado densas y deberán ser fragmentadas antes
+de entrar alSprint.
+Esta métrica permitiría calcular laVelocidad del Equipoal finalizar el primer
+ciclo de desarrollo, garantizando predicciones reales basadas en código funcional entre-
+gado y no en diagramas teóricos iniciales.
+31
+--- Page 33 ---
+Tabla 2.3: Matriz Consolidadora de Estimaciones (Backlog en Story Points)
+ID US Historia de Usuario
+(Narrativa Simplificada)
+Compleji-
+dad
+Incertidum-
+bre
+Esfuerzo Story
+Points
+US-01 Registro de asistencia de
+comensales mediante QR/DNI.
+Baja Baja Media 3
+US-02 Consulta del estado del beneficio
+y alertas de inasistencia.
+Baja Baja Baja 2
+US-03 Motor automático de faltas y
+suspensión por inasistencias.
+Media Media Alta 8
+US-04 Proceso automático de
+reemplazo desde lista de espera
+Media Media Media 5
+US-05 Consulta en línea del estado de
+trámite de postulación
+Baja Baja Baja 2
+US-06 Envío digital de FUT y carga de
+documentos PDF
+Media Baja Media 3
+US-07 Evaluación y puntuación
+socioeconómica de postulantes
+Media Media Media 5
+US-08 Calendario histórico mensual de
+asistencias del estudiante
+Baja Baja Baja 2
+US-09 Módulo de exportación mensual
+de reportes en PDF
+Media Baja Alta 5
+32
+--- Page 34 ---
+Capítulo 3
+Arquitectura del Sistema (Modelo C4):
+3.1 Estrategia Arquitectónica:
+El diseño arquitectónico del Sistema de Control de Asistencia del Comedor Uni-
+versitario de la Universidad Nacional de Moquegua no se fundamenta únicamente en
+decisiones tecnológicas, sino que responde a las necesidades identificadas durante el pro-
+ceso de levantamiento de información, las entrevistas realizadas a la Asistenta Social y
+el análisis del proceso actual del comedor universitario.
+La propuesta arquitectónica busca atender los principales problemas identificados,
+tales como la suplantación de identidad, el registro manual de asistencias, la dificultad
+en el control de inasistencias y la generación de reportes administrativos.
+Asimismo, la arquitectura del sistema prioriza atributos de calidad como:
+Disponibilidad de la información.
+Seguridad en el registro de asistencias.
+Facilidad de uso para los beneficiarios.
+Mantenibilidad del sistema.
+Escalabilidad para futuras funcionalidades.
+Integridad y confiabilidad de los datos.
+Para documentar la arquitectura de manera comprensible tanto para los stakehol-
+ders del proyecto (Asistenta Social, beneficiarios y personal administrativo) como para
+el equipo de desarrollo, se adopta elModelo C4propuesto por Simon Brown.
+Este modelo permite representar la arquitectura del sistema mediante diferentes
+niveles de abstracción, facilitando la comprensión de la interacción entre los usuarios,
+el sistema, sus componentes internos y la infraestructura tecnológica.
+La utilización del Modelo C4 permitirá describir de manera estructurada el con-
+texto del sistema, los contenedores de software, los componentes principales y las rela-
+ciones existentes entre ellos, contribuyendo a una mejor comunicación entre las partes
+involucradas y proporcionando una base sólida para futuras etapas de desarrollo e
+implementación del sistema.
+33
+--- Page 35 ---
+3.2 Atributos de Calidad (ISO/IEC 25010):
+Antes de definir la arquitectura tecnológica del Sistema de Gestión de Beneficiarios
+y Control de Asistencia del Comedor Universitario, es necesario establecer los atributos
+de calidad que el sistema debe cumplir. Estos atributos serán como una guía para las
+decisiones arquitectónicas y garantizarán que la solución responda a las necesidades
+identificadas durante el descubrimiento del producto.
+34
+--- Page 36 ---
+Tabla 3.1: Matriz de Atributos de Calidad del Sistema de Gestión del Comedor Uni-
+versitario
+Atributo (ISO 25010) Especificación y Criterio de Medida
+Disponibilidad El sistema debe encontrarse disponible durante los
+horarios de atención del comedor universitario (desayuno
+y almuerzo), garantizando un tiempo de disponibilidad
+mínimo del 99%.
+Seguridad
+(Confidencialidad)
+La información de estudiantes, beneficiarios y personal
+administrativo debe almacenarse de forma segura. Las
+contraseñas serán cifradas mediante algoritmos de hashing
+seguros (bcrypt) y el acceso al sistema se controlará
+mediante autenticación y autorización basada en roles.
+Usabilidad La interfaz debe ser intuitiva y fácil de utilizar por la
+asistenta social y los estudiantes. El registro de asistencia
+debe realizarse en menos de 10 segundos por estudiante y
+la plataforma deberá ser compatible con dispositivos
+móviles y computadoras.
+RendimientoLa validación de beneficiarios y el registro de asistencia
+deberán completarse en un tiempo máximo de 2 segundos
+por consulta para evitar colas y retrasos durante los
+horarios de atención.
+Fiabilidad El sistema debe garantizar la integridad de los registros de
+asistencia e inasistencia, evitando duplicidades y
+asegurando que cada beneficiario registre una única
+asistencia por turno.
+MantenibilidadLa arquitectura del sistema deberá permitir la
+incorporación de nuevas funcionalidades, como
+automatización de postulaciones o integración con
+sistemas institucionales, sin afectar los módulos existentes.
+Compatibilidad El sistema deberá ejecutarse correctamente en los
+navegadores web modernos utilizados por la universidad y
+ser accesible desde diferentes dispositivos conectados a la
+red institucional.
+RecuperabilidadLa base de datos deberá contar con mecanismos de
+respaldo automático diario para minimizar la pérdida de
+información ante fallos del sistema o errores operativos.
+3.3 Nivel 1: Diagrama de Contexto
+El Nivel 1 del Modelo C4 ilustra el sistema completo como una caja negra. Identifica
+a los actores principales (roles) y a las integraciones con sistemas externos que rodean
+al Sistema de Gestión y Control de Asistencia del Comedor Universitario.
+35
+--- Page 37 ---
+Figura 3.1: Diagram de Contexto (C4 Nivel 1) del Sistema de Gestión y Control de
+Asistencia del Comedor Univeristario
+36
+--- Page 38 ---
+3.3.1 Definición de Elementos de Contexto
+Tabla 3.2: Elementos del Nivel de Contexto
+Tipo Elemento Responsabilidad / Relación
+Actor Estudiante /
+Beneficiario
+Registra su asistencia diaria mediante código
+QR, código de barras o ingreso de DNI, y
+consulta el historial de sus raciones en la
+plataforma.
+ActorAsistenta SocialEvalúa a los postulantes, gestiona la lista de
+espera, consulta reportes de asistencia y
+recibe alertas de alumnos suspendidos.
+Actor Administrador /
+Tecnico
+Configura parámetros del sistema, gestiona los
+turnos del comedor y administra cuentas de
+usuario.
+Sistema
+(Core)
+Sistema de Gestión y
+Control de Asistencia
+del Comedor
+Universitario
+Sistema central encargado de
+automatizar el control de comensales,
+administrar vacantes y procesar
+inasistencias y sanciones.
+Ext. Base de Datos de
+Estudiantes UNAM
+Sistema académico institucional externo
+consultado para validar la matrícula vigente
+del alumno y corroborar su Escuela
+Profesional.
+Ext.Lector QR / Teclado
+DNI
+Hardware de captura (cámara, pistola lectora
+o teclado numérico) encargado de capturar el
+identificador del alumno para agilizar el
+registro.
+3.4 Nivel 2: Diagrama de Contenedores:
+Al hacer zoom al Sistema de Gestión y Control de Asistencia del Comedor Uni-
+versitario, el Nivel 2 del Modelo C4 permite identificar los principales contenedores
+técnicos.
+LaarquitecturaseleccionadaparaelproyectosebasaenBackend-as-a-Service(BaaS)
+con Supabase y Serverless para el frontend. Se incorpora la generación de reportes
+del lado del cliente (o mediante Edge Functions de Supabase) como un proceso inde-
+pendiente, encargado de la compilación y exportación de PDF y Excel sin afectar el
+rendimiento de la base de datos transaccional.
+37
+--- Page 39 ---
+Figura 3.2: Diagrama de Contenedores (C4 Nivel 2) del Sistema de Gestión y Control
+de Asistencia del Comedor Universitario
+38
+--- Page 40 ---
+3.4.1 Definición Técnica de los Contenedores
+Tabla 3.3: Infraestructura y Contenedores (Nivel 2)
+Contenedor Tecnología
+Propuesta
+Responsabilidad en el Sistema
+Aplicación
+Web
+HTML5,
+CSS3 y
+JavaScript
+(Vanilla)
+Proporciona la interfaz gráfica responsive,
+desplegada en Vercel, para que los comensales
+consulten su estado y la asistenta social evalúe
+postulaciones e inicie la marcación.
+Servicio
+Backend /
+API
+Supabase
+(Auth,
+Storage,
+APIs)
+Proporciona autenticación segura de usuarios,
+almacenamiento de expedientes en Storage y
+endpoints API con seguridad RLS.
+Base de
+Datos
+Relacional
+PostgreSQL
+(Supabase)
+Almacena registros de comensales, historial diario de
+asistencias, inasistencias acumuladas, datos
+socioeconómicos y ejecuta la lógica mediante
+triggers en PL/pgSQL.
+Generación
+de Reportes
+Librerías JS
+(jsPDF,
+SheetJS) /
+Edge
+Functions
+Encargada de la generación dinámica de reportes en
+formato PDF y Excel directamente desde el frontend
+o mediante funciones serverless de Supabase.
+Base de
+Datos UNAM
+(Externo)
+Sistema
+Institucio-
+nal
+API externa del sistema académico institucional
+para validar la matrícula semestral y la escuela
+profesional de los postulantes.
+Lector QR /
+Barras
+(Externo)
+Hardware
+Óptico
+Periférico de lectura conectado por USB o
+dispositivo móvil que escanea credenciales para
+acelerar el ingreso al comedor.
+3.5 Registro de Decisiones Arquitectónicas (ADRs)
+LosArchitecture Decision Records(ADRs) documentan las decisiones tecnológicas
+estratégicasqueconfiguranelsistema.Seañadeel**ADR007**parareflejarladecisión
+del cambio del lector biométrico por los métodos ópticos y de teclado.
+39
+--- Page 41 ---
+Tabla 3.4: Registro de Decisiones Arquitectónicas Estratégicas
+ADR Decisión
+Adoptada
+Justificación (Contexto y Consecuencias)
+001 Arquitectura
+Jamstack /
+BaaS
+El sistema será utilizado por personal administrativo y
+estudiantes. Se adopta una arquitectura basada en Frontend
+desacoplado (HTML5/CSS3/JavaScript) desplegado en
+Vercel, el cual se comunica directamente con servicios en la
+nube de Supabase (Database-as-a-Service), asegurando alta
+disponibilidad, bajo coste de infraestructura y facilidad de
+acceso.
+002Aplicación
+Web como
+plataforma
+principal
+Se requiere una solución accesible sin instalación previa y
+compatible con los equipos disponibles en la universidad,
+donde el usuario pueda acceder al sistema desde cualquier
+navegador moderno conectado a la red institucional.
+003 Uso de
+PostgreSQL
+en Supabase
+La gestión de beneficiarios, asistencias, inasistencias y
+reportes involucra entidades altamente relacionadas.
+PostgreSQL en Supabase garantiza la integridad referencial,
+el uso de Triggers avanzados en PL/pgSQL para la
+automatización de inasistencias y la seguridad a nivel de
+filas (RLS).
+004Autenticación
+basada en
+credenciales
+seguras
+El sistema administra la información de los estudiantes y
+registros administrativos, solo los usuarios autorizados
+podrán acceder a las funcionalidades que les corresponde
+según su rol dentro del sistema.
+005 Centralización
+de registros
+y reportes
+La decisión de centralizar los datos en una única plataforma
+podrá reducir errores de gestión y facilitar la generación de
+reportes administrativos.
+006Implementación
+de respaldos
+periódicos de
+la base de
+datos
+Es importante crear copias de seguridad ante fallos o errores
+operativos, por lo que la implementación de un mecanismo
+de respaldos periódico que pueda recuperar la información
+reducirá la pérdida de información.
+007 Sustitución
+de biometría
+por lectura
+de códigos
+ópticos y
+DNI
+Se descarta el uso de lectores biométricos dactilares debido
+al alto coste de adquisición, requerimientos complejos de
+instalación en redes locales, riesgos de higiene en la
+manipulación y vulnerabilidad ante fallos de hardware. Se
+adopta la lectura de códigos QR, códigos de barras e ingreso
+por DNI, lo que permite un despliegue de coste cero (usando
+cámaras web o smartphones existentes) y una fácil
+integración con el carnet estudiantil actual, mitigando la
+suplantación mediante supervisión visual del personal del
+comedor.
+40
+--- Page 42 ---
+3.6 Conclusión del Diseño Arquitectónico
+La arquitectura C4 propuesta para el MVP del **Sistema de Gestión y Control
+de Asistencia del Comedor Universitario** garantiza la modularidad del código y la
+seguridad de la información.
+Al separar las responsabilidades mediante servicios dedicados en la nube como la
+base de datos PostgreSQL en Supabase, el backend serverless de Supabase y la gene-
+ración de reportes del lado del cliente o Edge Functions, aseguramos que la marcación
+rápida no se vea afectada por la generación concurrente de reportes administrativos de
+fin de mes. El cambio a una lectura óptica por códigos QR/Barras y DNI simplifica
+radicalmente la infraestructura requerida, reduciendo los puntos de fallo y garantizan-
+do que el sistema sea viable de operar bajo los recursos de hardware actuales de la
+universidad Nacional de Moquegua y la infraestructura moderna (Vercel/Supabase).
+41
+--- Page 43 ---
+Capítulo 4
+Diseño de Interfaz y Modelo de Datos:
+4.1 Diseño de Experiencia de Usuario (UX/UI):
+El diseño de las interfaces delSistema de Gestión de Beneficiarios del Co-
+medor Universitario y Asistenciasigue un enfoque centrado en el usuario, con-
+siderando los diferentes actores que interactúan con el sistema. Se diseñaron módulos
+independientes para el Beneficiario, la Asistenta Social, el Personal de Atención (Re-
+gistro de Asistencia) y el Administrador.
+El objetivo principal es asegurar rapidez en los puntos críticos (como las colas del
+comedor) y proveer herramientas de gestión eficientes para la administración y valida-
+ción de asistencias. Por ejemplo, el Módulo Beneficiario esta pensado para ser usado
+principalmente por celular, pues será usado para registrarse; en cambio, el Módulo
+Asistente Social esta pensado para ser usado en escritorio.
+4.1.1 Prototipado de Alta Fidelidad (Wireframe Nativo):
+Losprototiposhansidoconceptualizadossiguiendoelprincipiodediseñoadaptativo
+y priorizando la rapidez operativa. A continuación, se presenta la especificación de las
+dos vistas principales:
+1. Interfaz de Registro de Asistencia (Móvil/Tablet - Personal del Co-
+medor)Esta vista está diseñada para el personal que controla el ingreso al comedor,
+enfocándose en la lectura óptica:
+Lector de cámara integrado paraEscanear QRoCódigo de Barrasdel carnet.
+Pestaña alternativa paraIngreso manual de DNIsi el estudiante no cuenta
+con su carnet.
+Tarjeta de confirmación visual inmediata (verde para Ración Habilitada", rojo
+para "Falta/Suspendido.o "Turno Duplicado").
+2. Panel de la Asistenta Social (Dashboard Web)Esta vista centraliza la
+información para la toma de decisiones y el seguimiento diario:
+Menú lateral (Sidebar) con acceso a: Dashboard, Beneficiarios, Postulantes, Lista
+de Espera, Asistencias, Justificaciones (FUT), Reportes y Configuración.
+42
+--- Page 44 ---
+Indicadores clave de rendimiento (KPIs) en tiempo real: Total de asistencias del
+día, justificaciones pendientes, y alertas de estudiantes con riesgo por exceso de
+inasistencias.
+Tabla de control general y sección de alertas automáticas.
+4.2 Modelo de Persistencia (Base de Datos):
+En alineación con las decisiones arquitectónicas del Capítulo III, se utilizaPost-
+greSQLcomo motor de base de datos relacional para garantizar la integridad de los
+registros de asistencia, postulaciones, y procesos administrativos. El modelo ha sido
+normalizado y consta de 20 tablas organizadas desde catálogos maestros hasta tran-
+sacciones operativas.
+Adicionalmente, se han implementadoTriggersa nivel de base de datos para au-
+tomatizar reglas de negocio críticas, como la inhabilitación de beneficiarios por exceso
+de inasistencias y la prevención de solicitudes duplicadas.
+4.2.1 Diagrama Entidad-Relación (Modelo Lógico):
+La estructura lógica define a las entidades principales de donde se desprenden el
+registro depostulacion,beneficiario,solicitudy laasistencia.
+Figura 4.1: Diagrama Entidad-Relación Lógico del Sistema (Core Operativo).
+43
+--- Page 45 ---
+4.2.2 Diccionario de Datos:
+El diccionario de datos sirve como contrato técnico para el desarrollo del Backend y
+las tablas de la Base de Datos a la que se conecta este. A continuación, se detallan todas
+las tablas del modelo lógico identificado en el Diagrama Entidad-Relación, incluyendo
+sus atributos, tipos de datos, claves y restricciones.
+Tabla 4.1: Estructura de la tablafacultad
+Campo Tipo de Dato Restricciones Descripción
+id_facultad INTEGER PK Identificador único de la
+facultad.
+nombre_facultad VARCHAR(120) UNQ, NN Nombre completo de la
+facultad.
+Tabla 4.2: Estructura de la tablaescuela_profesional
+Campo Tipo de Dato Restricciones Descripción
+id_escuela INTEGER PK Identificador único de la
+escuela profesional.
+nombre_escuela VARCHAR(120) UNQ, NN Nombre completo de la
+escuela profesional.
+id_facultad INTEGER FK, NN Relación con la facultad a la
+que pertenece.
+Tabla 4.3: Estructura de la tablaestado
+Campo Tipo de Dato Restricciones Descripción
+id_estado INTEGER PK Identificador único del estado.
+nombre_estado VARCHAR(30) UNQ, NN Nombre del estado (ej. Activo,
+Inactivo).
+Tabla 4.4: Estructura de la tablacargo
+Campo Tipo de Dato Restricciones Descripción
+id_cargo INTEGER PK Identificador único del cargo.
+nombre_cargo VARCHAR(80) UNQ, NN Nombre del cargo (ej. Director,
+Asistente).
+44
+--- Page 46 ---
+Tabla 4.5: Estructura de la tablapersonal
+Campo Tipo de Dato Restricciones Descripción
+id_personal INTEGER PK Identificador único del
+personal.
+nombres VARCHAR(80) NN Nombres completos.
+apellidos VARCHAR(80) NN Apellidos completos.
+numero_documento VARCHAR(15) UNQ, NN Número de documento de
+identidad.
+telefono VARCHAR(15) NN Teléfono de contacto.
+correo VARCHAR(100) NN Correo electrónico
+institucional.
+direccion VARCHAR(150) NN Dirección de domicilio.
+id_cargo INTEGER FK, NN Cargo que desempeña.
+id_estado INTEGER FK, NN Estado del personal.
+Tabla 4.6: Estructura de la tablaestudiante
+Campo Tipo de Dato Restricciones Descripción
+id_estudiante INTEGER PK Identificador único del
+estudiante.
+codigo_universitario VARCHAR(12) UNQ, NN Código universitario
+único.
+dni CHAR(8) UNQ, NN Documento de Identidad.
+nombres VARCHAR(80) NN Nombres completos.
+apellidos VARCHAR(80) NN Apellidos completos.
+sexo CHAR(1) NN Sexo (M/F).
+fecha_nacimiento DATE NN Fecha de nacimiento.
+telefono VARCHAR(15) NN Teléfono de contacto.
+correo VARCHAR(100) NN Correo electrónico
+institucional.
+direccion VARCHAR(150) NN Dirección de domicilio.
+ciclo SMALLINT NN Ciclo académico actual.
+id_escuela INTEGER FK, NN Relación con la escuela
+profesional.
+id_estado INTEGER FK, NN Estado actual del
+estudiante.
+Tabla 4.7: Estructura de la tablaestado_postulacion
+Campo Tipo de Dato Restricciones Descripción
+id_estado_postulacion INTEGER PK Identificador único del
+estado de postulación.
+nombre_estado VARCHAR(30) UNQ, NN Nombre del estado (ej.
+Pendiente, Aprobado).
+45
+--- Page 47 ---
+Tabla 4.8: Estructura de la tablapostulacion
+Campo Tipo de Dato Restricciones Descripción
+id_postulacion INTEGER PK Identificador único
+de la postulación.
+id_estudiante INTEGER FK, NN Estudiante que
+postula.
+fecha_postulacion DATE NN Fecha de registro de
+la postulación.
+observacion VARCHAR(300) NN Observaciones
+adicionales.
+documentos_completos BOOLEAN DEF(F) Verificación de
+documentos
+completos.
+entrevista_realizada BOOLEAN DEF(F) Indicador de si se
+realizó entrevista.
+id_estado_postulacion INTEGER FK, NN Estado actual de la
+postulación.
+url_fut VARCHAR(255) NULL URL de
+almacenamiento del
+FUT.
+url_ficha_socioeconomica VARCHAR(255) NULL URL de
+almacenamiento de
+la ficha
+socioeconómica.
+url_constancia_matricula VARCHAR(255) NULL URL de
+almacenamiento de
+la constancia de
+matrícula.
+Tabla 4.9: Estructura de la tablareporte
+Campo Tipo de Dato Restricciones Descripción
+id_reporte INTEGER PK Identificador único del
+reporte.
+nombre_reporte VARCHAR(100) NN Nombre del reporte.
+fecha_generacion TIMESTAMP NN Fecha y hora de generación
+del reporte.
+descripcion VARCHAR(250) NN Descripción del reporte.
+id_personal INTEGER FK, NN Personal que generó el
+reporte.
+46
+--- Page 48 ---
+Tabla 4.10: Estructura de la tablarol
+Campo Tipo de Dato Restricciones Descripción
+id_rol INTEGER PK Identificador único del rol.
+nombre_rol VARCHAR(50) UNQ, NN Nombre del rol (ej. Admin,
+Bienestar, Asistente).
+Tabla 4.11: Estructura de la tablausuario
+Campo Tipo de Dato Restricciones Descripción
+id_usuario UUID PK Identificador único del usuario
+(Auth.users mapping).
+username VARCHAR(50) UNQ, NN Nombre de usuario.
+id_rol INTEGER FK, NN Rol asignado (1:Admin,
+2:Bienestar, 3:Asistente,
+4:Beneficiario, 5:Postulante).
+id_estudiante INTEGER FK, UNQ Asociación con alumnos
+(Postulante/Beneficiario).
+id_personal INTEGER FK, UNQ Asociación con personal (Admin,
+Dirección, Asistente).
+id_beneficiario INTEGER FK, UNQ Asociación con beneficiarios
+(tras ser admitido).
+id_estado INTEGER FK, NN Estado del usuario.
+fecha_registro TIMESTAMP NN Fecha de registro del usuario.
+Tabla 4.12: Estructura de la tablabeneficiario
+Campo Tipo de Dato Restricciones Descripción
+id_beneficiario INTEGER PK Identificador único del
+beneficiario.
+id_postulacion INTEGER FK, UNQ Postulación asociada al
+beneficiario.
+fecha_inicio DATE NN Fecha de inicio como beneficiario.
+fecha_fin DATE NULL Fecha de fin como beneficiario.
+activo BOOLEAN DEF(T) Indicador de si el beneficiario
+está activo.
+Tabla 4.13: Estructura de la tablaestado_solicitud
+Campo Tipo de Dato Restricciones Descripción
+id_estado_solicitud INTEGER PK Identificador único del
+estado de solicitud.
+nombre_estado VARCHAR(30) UNQ, NN Nombre del estado (ej.
+Pendiente, Aprobado,
+Rechazado).
+47
+--- Page 49 ---
+Tabla 4.14: Estructura de la tablatipo_racion
+Campo Tipo de Dato Restricciones Descripción
+id_tipo_racion INTEGER PK Identificador único del tipo de
+ración.
+nombre_racion VARCHAR(20) UNQ, NN Nombre del tipo de ración.
+descripcion VARCHAR(150) NN Descripción del tipo de ración.
+costo DECIMAL(10,2) NN Costo de la ración.
+Tabla 4.15: Estructura de la tablahorario
+Campo Tipo de Dato Restricciones Descripción
+id_horario INTEGER PK Identificador único del horario.
+nombre_horario VARCHAR(40) NN Nombre del horario (ej.
+Desayuno, Almuerzo).
+hora_inicio TIME NN Hora de inicio del horario.
+hora_fin TIME NN Hora de fin del horario.
+Tabla 4.16: Estructura de la tablasolicitud
+Campo Tipo de Dato Restricciones Descripción
+id_solicitud INTEGER PK Identificador único de la
+solicitud.
+fecha_solicitud DATE NN Fecha de la solicitud.
+id_beneficiario INTEGER FK, NN Beneficiario que realiza la
+solicitud.
+id_tipo_racion INTEGER FK, NN Tipo de ración solicitada.
+id_horario INTEGER FK, NN Horario de la solicitud.
+id_estado_solicitud INTEGER FK, NN Estado actual de la
+solicitud.
+Tabla 4.17: Estructura de la tabladetalle_solicitud
+Campo Tipo de Dato Restricciones Descripción
+id_detalle_solicitud INTEGER PK Identificador único del
+detalle de solicitud.
+id_solicitud INTEGER FK, NN Solicitud asociada.
+observacion VARCHAR(250) NULL Observaciones del detalle.
+fecha_atencion TIMESTAMP NULL Fecha y hora de atención.
+48
+--- Page 50 ---
+Tabla 4.18: Estructura de la tablaasistencia
+Campo Tipo de Dato Restricciones Descripción
+id_asistencia INTEGER PK Identificador único de la asistencia.
+id_solicitud INTEGER FK, NN Solicitud asociada a la asistencia.
+fecha DATE NN Fecha de la asistencia.
+hora TIME NN Hora de la asistencia.
+asistio BOOLEAN DEF(F) Indicador de si asistió.
+justificado BOOLEAN DEF(F) Indicador de si la inasistencia fue
+justificada.
+4.3 Conclusión del Diseño
+La coherencia entre la estructura de la base de datos (y sus triggers de automa-
+tización) con la interfaz de usuario modular asegura que el sistema cumpla con los
+atributos de rendimiento y seguridad.
+El modelo de persistencia facilita la gestión automatizada de asistencias e inasis-
+tencias, mientras que el diseño de interfaces prioriza la velocidad de atención para el
+personal del Comedor Universitario.
+Por ende aunque nuestro diseño, no sea el más práctico, ni el mejor en eficiencia;
+cumple con el cometido.
+49
