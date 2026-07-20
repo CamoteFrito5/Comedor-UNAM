@@ -173,93 +173,95 @@
      ════════════════════════════════════════════════════════════ -->
 <div id="app-shell" style="display:none">
 
-  <!-- ── Sidebar ─────────────────────────────────────────────── -->
-  <aside class="sidebar" id="sidebar">
+  <!-- Cabecera superior — Estilo UNAM Portal (Ancho completo arriba) -->
+  <header class="top-header">
+    <div class="top-header-left">
+      <div style="display:flex; align-items:center; gap: 0.75rem;">
+        <!-- SVG Logo UNAM simplificado -->
+        <svg viewBox="0 0 45 45" width="40" height="40" style="border-radius: var(--radius-sm);">
+          <rect width="45" height="45" rx="6" fill="#002d62"/>
+          <circle cx="22.5" cy="22.5" r="18" fill="none" stroke="#f0c060" stroke-width="1.5"/>
+          <text x="22.5" y="27" font-family="'Outfit', sans-serif" font-weight="900" font-size="11" fill="#ffffff" text-anchor="middle">UNAM</text>
+        </svg>
+        <button class="menu-toggle-btn" onclick="toggleMobileSidebar()">☰</button>
+      </div>
 
-    <!-- Logo institucional -->
-    <div class="sidebar-logo">
-      <div class="logo-mark">U</div>
-      <div class="logo-text">
-        <strong>SGCU · UNAM</strong>
-        <span>Comedor Universitario Ilo</span>
+      <!-- Mobile Header Title (visible solo en móvil) -->
+      <div class="mobile-header-title">
+        <span class="mobile-title" id="mobile-header-title">Comedor Universitario</span>
+        <span class="mobile-subtitle" id="mobile-header-subtitle">UNAM Ilo</span>
+      </div>
+
+      <!-- Info del Estudiante (Inyectado por app.js) -->
+      <div id="student-header-info" class="student-header-info" style="display:none">
+        <div class="student-header-photo" id="header-student-avatar">?</div>
+        <div class="student-header-details">
+          <span class="code-line">DNI: <span id="header-student-code">—</span> · ESTUDIANTE</span>
+          <span class="field-line">Carrera: <strong id="header-student-career">—</strong></span>
+          <span class="field-line">Nombres: <strong id="header-student-name">—</strong></span>
+        </div>
       </div>
     </div>
 
-    <!-- Usuario activo — renderizado por app.js → _renderUserInfo() -->
-    <div class="sidebar-user-info">
-      <div class="sidebar-user">
-        <div class="user-avatar" id="sidebar-avatar">—</div>
-        <div class="user-info">
-          <strong id="sidebar-user-name">—</strong>
-          <span   id="sidebar-user-role">—</span>
-        </div>
+    <div class="top-header-right">
+      <span class="role-tag" id="header-role-tag">Módulo</span>
+      <div class="header-icons">
+        <!-- Botón de notificaciones integrado -->
+        <button class="header-icon-btn" id="notif-btn" onclick="toggleNotifPanel()" title="Notificaciones" style="position:relative">
+          🔔
+          <span class="notif-count" id="notif-count" style="display:none; position:absolute; top:2px; right:2px; width:14px; height:14px; font-size:0.58rem; background:var(--rose); color:#fff; border-radius:50%; align-items:center; justify-content:center;">0</span>
+        </button>
+        <button class="header-icon-btn" title="Ayuda">❓</button>
+        <button class="header-icon-btn" onclick="goToRoles()" title="Cambiar de Módulo">⎋</button>
       </div>
     </div>
+  </header>
 
-    <!-- Navegación — renderizada por app.js → renderSidebar() -->
-    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+  <!-- Contenedor del cuerpo (Sidebar + Contenido principal lado a lado) -->
+  <div class="app-container">
 
-    <!-- Botón volver -->
-    <div class="sidebar-footer">
-      <button class="btn-back-roles" onclick="goToRoles()">← Cambiar de módulo</button>
-    </div>
+    <!-- ── Sidebar ─────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
 
-  </aside><!-- /sidebar -->
-
-
-  <!-- ── Área principal ─────────────────────────────────────── -->
-  <div class="main-content">
-
-    <!-- Cabecera superior — Estilo UNAM Portal -->
-    <header class="top-header">
-      <div class="top-header-left">
-        <div style="display:flex; align-items:center; gap: 0.75rem;">
-          <!-- SVG Logo UNAM simplificado -->
-          <svg viewBox="0 0 45 45" width="40" height="40" style="border-radius: var(--radius-sm);">
-            <rect width="45" height="45" rx="6" fill="#002d62"/>
-            <circle cx="22.5" cy="22.5" r="18" fill="none" stroke="#f0c060" stroke-width="1.5"/>
-            <text x="22.5" y="27" font-family="'Outfit', sans-serif" font-weight="900" font-size="11" fill="#ffffff" text-anchor="middle">UNAM</text>
-          </svg>
-          <button class="menu-toggle-btn" onclick="toggleMobileSidebar()">☰</button>
+      <!-- Logo institucional -->
+      <div class="sidebar-logo">
+        <div class="logo-mark">U</div>
+        <div class="logo-text">
+          <strong>SGCU · UNAM</strong>
+          <span>Comedor Universitario Ilo</span>
         </div>
+      </div>
 
-        <!-- Mobile Header Title (visible solo en móvil) -->
-        <div class="mobile-header-title">
-          <span class="mobile-title" id="mobile-header-title">Comedor Universitario</span>
-          <span class="mobile-subtitle" id="mobile-header-subtitle">UNAM Ilo</span>
-        </div>
-
-        <!-- Info del Estudiante (Inyectado por app.js) -->
-        <div id="student-header-info" class="student-header-info" style="display:none">
-          <div class="student-header-photo" id="header-student-avatar">?</div>
-          <div class="student-header-details">
-            <span class="code-line">DNI: <span id="header-student-code">—</span> · ESTUDIANTE</span>
-            <span class="field-line">Carrera: <strong id="header-student-career">—</strong></span>
-            <span class="field-line">Nombres: <strong id="header-student-name">—</strong></span>
+      <!-- Usuario activo — renderizado por app.js → _renderUserInfo() -->
+      <div class="sidebar-user-info">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebar-avatar">—</div>
+          <div class="user-info">
+            <strong id="sidebar-user-name">—</strong>
+            <span   id="sidebar-user-role">—</span>
           </div>
         </div>
       </div>
 
-      <div class="top-header-right">
-        <span class="role-tag" id="header-role-tag">Módulo</span>
-        <div class="header-icons">
-          <!-- Botón de notificaciones integrado -->
-          <button class="header-icon-btn" id="notif-btn" onclick="toggleNotifPanel()" title="Notificaciones" style="position:relative">
-            🔔
-            <span class="notif-count" id="notif-count" style="display:none; position:absolute; top:2px; right:2px; width:14px; height:14px; font-size:0.58rem; background:var(--rose); color:#fff; border-radius:50%; align-items:center; justify-content:center;">0</span>
-          </button>
-          <button class="header-icon-btn" title="Ayuda">❓</button>
-          <button class="header-icon-btn" onclick="goToRoles()" title="Cambiar de Módulo">⎋</button>
-        </div>
+      <!-- Navegación — renderizada por app.js → renderSidebar() -->
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+
+      <!-- Botón volver -->
+      <div class="sidebar-footer">
+        <button class="btn-back-roles" onclick="goToRoles()">← Cambiar de módulo</button>
       </div>
-    </header>
 
-    <!-- Contenido de página — vistas inyectadas aquí por navigateTo() -->
-    <main class="page-content">
-      <div id="view-container" class="page-view"></div>
-    </main>
+    </aside><!-- /sidebar -->
 
-  </div><!-- /main-content -->
+    <!-- ── Área principal ─────────────────────────────────────── -->
+    <div class="main-content">
+      <!-- Contenido de página — vistas inyectadas aquí por navigateTo() -->
+      <main class="page-content">
+        <div id="view-container" class="page-view"></div>
+      </main>
+    </div><!-- /main-content -->
+
+  </div><!-- /app-container -->
 
   <!-- Bottom Navigation Bar (visible solo en móvil) -->
   <nav class="mobile-bottom-nav" id="mobile-bottom-nav"></nav>
