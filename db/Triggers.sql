@@ -4,7 +4,7 @@
     SGBD: PostgreSQL 12 o superior (Compatible con Supabase)
 =============================================================================*/
 
-USE ComedorUniversitario; -- Nota: En Supabase, puedes omitir esta línea ya que se ejecuta en la base de datos por defecto.
+-- USE ComedorUniversitario; -- En Supabase se omite esta línea ya que se ejecuta en la base de datos por defecto.
 
 /*=============================================================================
     1. TRIGGER: tr_solicitud_evitar_duplicado
@@ -42,7 +42,8 @@ BEFORE INSERT OR UPDATE ON solicitud
 FOR EACH ROW
 EXECUTE FUNCTION fn_evitar_solicitud_duplicada();
 
-PRINT 'Trigger tr_solicitud_evitar_duplicado creado.'; -- En Postgres, esto se ignora o se puede cambiar por un comentario.
+-- En Postgres, la siguiente línea se comenta para evitar errores de sintaxis:
+-- PRINT 'Trigger tr_solicitud_evitar_duplicado creado.';
 
 
 /*=============================================================================
@@ -85,7 +86,7 @@ AFTER INSERT ON beneficiario
 FOR EACH ROW
 EXECUTE FUNCTION fn_crear_usuario_automatico();
 
-PRINT 'Trigger tr_beneficiario_crear_usuario_automatico creado.';
+-- PRINT 'Trigger tr_beneficiario_crear_usuario_automatico creado.';
 
 
 /*=============================================================================
@@ -153,4 +154,4 @@ AFTER INSERT OR UPDATE ON asistencia
 FOR EACH ROW
 EXECUTE FUNCTION fn_controlar_inasistencias();
 
-PRINT 'Trigger tr_asistencia_controlar_inasistencias creado.';
+-- PRINT 'Trigger tr_asistencia_controlar_inasistencias creado.';

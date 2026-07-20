@@ -183,242 +183,170 @@ const UsuariosService = {
     return { data, error: null };
   },
 
-  async autenticar(role, usuario, contrasena) {
+  /**
+   * Autenticación por DNI + contraseña.
+   * Busca el usuario vinculado al DNI (en estudiante o personal)
+   * y verifica que el rol coincida con el módulo solicitado.
+   * Roles DB: 1=Admin, 2=DBU, 3=Asistente Social, 4=Beneficiario, 5=Postulante
+   */
+  async autenticar(role, dni, contrasena) {
+    // Mapa: clave de frontend → id_rol en la DB
+    const ROLE_TO_DB_ID = FRONTEND_ROLE_MAP; // de config.js
+    const DB_ID_TO_ROLE = DB_ROLE_MAP;       // de config.js
+
     if (USE_SUPABASE) {
       try {
-        const { data: usr, error } = await _supabaseClient.from('usuario').select('*').eq('usuario', usuario).eq('contrasena', contrasena).maybeSingle();
-        if (error || !usr) {
-          return { ok: false, error: 'Usuario o contraseña incorrectos.' };
-        }
-
-        const roleMapDb = {
-          'admin': 1,
-          'asistenta_social': 2,
-          'beneficiario': 3,
-          'postulante': 3
-        };
-
-        const targetRolId = roleMapDb[role];
-        if (usr.id_rol !== targetRolId) {
-          return { ok: false, error: 'El usuario no pertenece a este perfil.' };
-        }
-
-        if (role === 'postulante' && usr.id_beneficiario !== null) {
-          return { ok: false, error: 'Ya eres beneficiario activo. Ingresa por el módulo de Beneficiario.' };
-        }
-        if (role === 'beneficiario' && usr.id_beneficiario === null) {
-          return { ok: false, error: 'Tu postulación aún no ha sido aprobada.' };
-        }
-
+        // 1. Determinar si el DNI corresponde a estudiante o personal
+        //    según el módulo solicitado.
+        let usuarioDb = null;
         let nombre = 'Usuario';
-        let dni = '';
-        let email = '';
+        let email  = '';
         let carrera = '';
-        let ciclo = 1;
-        let codigo = '';
+        let ciclo   = 1;
+        let codigo  = '';
+        let id_beneficiario_db = null;
+        let id_personal_db     = null;
+        let id_estudiante_db   = null;
 
-        if (usr.id_beneficiario) {
-          const { data: ben } = await _supabaseClient.from('beneficiario').select('*, postulacion(*, estudiante(*, escuela_profesional(*)))').eq('id_beneficiario', usr.id_beneficiario).maybeSingle();
-          const est = ben?.postulacion?.estudiante;
-          if (est) {
-            nombre = `${est.nombres} ${est.apellidos}`;
-            dni = est.dni;
-            email = est.correo;
-            carrera = est.escuela_profesional?.nombre_escuela || '';
-            ciclo = est.ciclo;
-            codigo = est.codigo_universitario;
+        if (role === 'beneficiario') {
+          // Beneficiario: DNI de la tabla estudiante → usuario con id_estudiante
+          const { data: est } = await _supabaseClient
+            .from('estudiante')
+            .select('*, escuela_profesional(nombre_escuela)')
+            .eq('dni', dni)
+            .maybeSingle();
+
+          if (!est) return { ok: false, error: 'DNI no encontrado. Verifica que estés inscrito.' };
+          id_estudiante_db = est.id_estudiante;
+
+          const { data: usr } = await _supabaseClient
+            .from('usuario')
+            .select('*')
+            .eq('id_estudiante', est.id_estudiante)
+            .eq('contrasena', contrasena)
+            .maybeSingle();
+
+          if (!usr) return { ok: false, error: 'DNI o contraseña incorrectos.' };
+          if (usr.id_estado === 3) return { ok: false, error: 'Tu cuenta está suspendida. Contacta con Bienestar Universitario.' };
+          if (usr.id_rol !== 4) return { ok: false, error: 'Este DNI no corresponde a un Beneficiario activo.' };
+          if (!usr.id_beneficiario) return { ok: false, error: 'Tu postulación aún no ha sido aprobada. Espera la evaluación de la DBU.' };
+
+          usuarioDb = usr;
+          id_beneficiario_db = usr.id_beneficiario;
+          nombre  = `${est.nombres} ${est.apellidos}`;
+          email   = est.correo || '';
+          carrera = est.escuela_profesional?.nombre_escuela || '';
+          ciclo   = est.ciclo || 1;
+          codigo  = est.codigo_universitario;
+
+        } else {
+          // Personal (DBU, Asistente Social, Admin): DNI de la tabla personal
+          const { data: pers } = await _supabaseClient
+            .from('personal')
+            .select('*, cargo(nombre_cargo)')
+            .eq('numero_documento', dni)
+            .maybeSingle();
+
+          if (!pers) return { ok: false, error: 'DNI no encontrado. Verifica que tu cuenta esté registrada.' };
+          id_personal_db = pers.id_personal;
+
+          const { data: usr } = await _supabaseClient
+            .from('usuario')
+            .select('*')
+            .eq('id_personal', pers.id_personal)
+            .eq('contrasena', contrasena)
+            .maybeSingle();
+
+          if (!usr) return { ok: false, error: 'DNI o contraseña incorrectos.' };
+          if (usr.id_estado === 3) return { ok: false, error: 'Tu cuenta está suspendida. Contacta con el Administrador.' };
+
+          const expectedRolId = ROLE_TO_DB_ID[role];
+          if (usr.id_rol !== expectedRolId) {
+            const rolNombre = DB_ID_TO_ROLE[usr.id_rol] || 'desconocido';
+            return { ok: false, error: `Tu usuario pertenece al módulo "${rolNombre}", no a "${role}".` };
           }
-        } else if (usr.id_personal) {
-          const { data: pers } = await _supabaseClient.from('personal').select('*, cargo(*)').eq('id_personal', usr.id_personal).maybeSingle();
-          if (pers) {
-            nombre = `${pers.nombres} ${pers.apellidos}`;
-            dni = pers.numero_documento;
-            email = pers.correo;
-          }
-        } else if (role === 'postulante') {
-          const { data: est } = await _supabaseClient.from('estudiante').select('*, escuela_profesional(*)').eq('codigo_universitario', usuario).maybeSingle();
-          if (est) {
-            nombre = `${est.nombres} ${est.apellidos}`;
-            dni = est.dni;
-            email = est.correo;
-            carrera = est.escuela_profesional?.nombre_escuela || '';
-            ciclo = est.ciclo;
-            codigo = est.codigo_universitario;
-          }
+
+          usuarioDb = usr;
+          nombre  = `${pers.nombres} ${pers.apellidos}`;
+          email   = pers.correo || '';
         }
 
+        // 2. Construir el objeto de usuario en formato frontend
         const userMapped = {
-          id: 'USR' + usr.id_usuario,
-          nombre: nombre,
-          rol: role,
-          dni: dni,
-          email: email,
-          activo: usr.id_estado === 1,
-          avatar: nombre.split(' ').map(n => n[0]).join('').slice(0, 3).toUpperCase(),
-          carrera: carrera,
-          ciclo: ciclo,
-          codigo: codigo || usuario,
-          id_usuario_db: usr.id_usuario,
-          id_beneficiario_db: usr.id_beneficiario,
-          id_personal_db: usr.id_personal
+          id:                  'USR' + usuarioDb.id_usuario,
+          nombre,
+          rol:                 role,
+          dni,
+          email,
+          activo:              usuarioDb.id_estado === 1,
+          avatar:              nombre.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+          carrera,
+          ciclo,
+          codigo,
+          id_usuario_db:       usuarioDb.id_usuario,
+          id_beneficiario_db,
+          id_personal_db,
+          id_estudiante_db,
         };
 
-        const currentUsers = DB._data.users || [];
-        const index = currentUsers.findIndex(u => u.id === userMapped.id);
-        if (index > -1) {
-          currentUsers[index] = userMapped;
-        } else {
-          currentUsers.push(userMapped);
-        }
+        // 3. Persistir en caché local para vistas offline
+        if (!DB._data.users) DB._data.users = [];
+        const idx = DB._data.users.findIndex(u => u.id === userMapped.id);
+        if (idx > -1) DB._data.users[idx] = userMapped;
+        else          DB._data.users.push(userMapped);
         DB._save();
 
         return { ok: true, user: userMapped };
+
       } catch (err) {
-        console.error(err);
+        console.error('[Auth Error]', err);
         return { ok: false, error: err.message };
       }
+
     } else {
+      // ── Modo offline (seed) ────────────────────────────────
       const allUsers = DB.get('users');
-      const user = allUsers.find(u => (u.codigo === usuario || u.dni === usuario || u.usuario === usuario || u.id === usuario) && (u.contrasena === contrasena || contrasena === '123456'));
-      if (!user) {
-        return { ok: false, error: 'Usuario o contraseña incorrectos.' };
+      const user = allUsers.find(u =>
+        u.dni === dni &&
+        (u.contrasena === contrasena || contrasena === '123456') &&
+        u.rol === role
+      );
+      if (!user) return { ok: false, error: 'DNI o contraseña incorrectos.' };
+      if (role === 'beneficiario' && !DB.get('beneficiarios').find(b => b.usuario_id === user.id)) {
+        return { ok: false, error: 'Tu postulación aún no ha sido aprobada.' };
       }
-
-      const ben = DB.get('beneficiarios').find(b => b.usuario_id === user.id);
-      
-      if (role === 'postulante') {
-        if (ben && ben.estado === 'activo') {
-          return { ok: false, error: 'Ya eres beneficiario activo. Ingresa por el módulo de Beneficiario.' };
-        }
-      } else if (role === 'beneficiario') {
-        if (!ben || ben.estado !== 'activo') {
-          return { ok: false, error: 'Tu postulación aún no ha sido aprobada.' };
-        }
-      } else if (role === 'asistenta_social') {
-        if (user.rol !== 'asistenta_social' && user.rol !== 'reportes') {
-          return { ok: false, error: 'El usuario no pertenece a este perfil.' };
-        }
-      } else if (role === 'admin') {
-        if (user.rol !== 'admin') {
-          return { ok: false, error: 'El usuario no pertenece a este perfil.' };
-        }
-      }
-
       return { ok: true, user };
     }
   },
 
-  async registrar(role, datos) {
+  /**
+   * Restablece la contraseña validando DNI + correo registrado.
+   * Invoca la función PL/pgSQL fn_restablecer_contrasena.
+   */
+  async restablecerContrasena(dni, correo, nuevaContrasena) {
     if (USE_SUPABASE) {
       try {
-        if (role === 'postulante') {
-          const { data: est, error: estErr } = await _supabaseClient.from('estudiante').insert({
-            codigo_universitario: datos.codigo,
-            dni: datos.dni,
-            nombres: datos.nombres,
-            apellidos: datos.apellidos,
-            sexo: datos.sexo,
-            correo: datos.email,
-            ciclo: parseInt(datos.ciclo),
-            id_escuela: parseInt(datos.id_escuela || 1),
-            id_estado: 1
-          }).select().single();
-
-          if (estErr) throw estErr;
-
-          const { data: post, error: postErr } = await _supabaseClient.from('postulacion').insert({
-            id_estudiante: est.id_estudiante,
-            id_estado_postulacion: 1,
-            observacion: 'Postulación registrada en línea',
-            documentos_completos: true,
-            entrevista_realizada: false
-          }).select().single();
-
-          if (postErr) throw postErr;
-
-          const { data: usr, error: usrErr } = await _supabaseClient.from('usuario').insert({
-            usuario: datos.usuario,
-            contrasena: datos.contrasena,
-            id_rol: 3,
-            id_beneficiario: null,
-            id_personal: null,
-            id_estado: 1
-          }).select().single();
-
-          if (usrErr) throw usrErr;
-
-          return { ok: true };
-        } else if (role === 'asistenta_social' || role === 'admin') {
-          const cargoId = role === 'admin' ? 1 : 3;
-          const { data: pers, error: persErr } = await _supabaseClient.from('personal').insert({
-            nombres: datos.nombres,
-            apellidos: datos.apellidos,
-            numero_documento: datos.dni,
-            correo: datos.email,
-            id_cargo: cargoId,
-            id_estado: 1
-          }).select().single();
-
-          if (persErr) throw persErr;
-
-          const rolId = role === 'admin' ? 1 : 2;
-          const { data: usr, error: usrErr } = await _supabaseClient.from('usuario').insert({
-            usuario: datos.usuario,
-            contrasena: datos.contrasena,
-            id_rol: rolId,
-            id_personal: pers.id_personal,
-            id_estado: 1
-          }).select().single();
-
-          if (usrErr) throw usrErr;
-
-          return { ok: true };
-        }
+        const { data, error } = await _supabaseClient.rpc('fn_restablecer_contrasena', {
+          p_dni:              dni,
+          p_correo:           correo,
+          p_nueva_contrasena: nuevaContrasena,
+        });
+        if (error) return { ok: false, error: error.message };
+        if (!data?.ok) return { ok: false, error: data?.error || 'No se pudo actualizar la contraseña.' };
+        return { ok: true };
       } catch (err) {
-        console.error(err);
         return { ok: false, error: err.message };
       }
     } else {
-      const userId = DB.uid('USR');
-      const newUser = {
-        id: userId,
-        nombre: `${datos.nombres} ${datos.apellidos}`,
-        rol: role === 'asistenta_social' ? 'asistenta_social' : role,
-        dni: datos.dni,
-        email: datos.email,
-        activo: true,
-        avatar: datos.nombres[0] + (datos.apellidos[0] || ''),
-        carrera: datos.carrera || 'Sistemas',
-        ciclo: parseInt(datos.ciclo) || 1,
-        codigo: datos.codigo || datos.usuario,
-        usuario: datos.usuario,
-        contrasena: datos.contrasena
-      };
-
-      DB.add('users', newUser);
-
-      if (role === 'postulante') {
-        const postId = DB.uid('POST');
-        DB.add('postulantes', {
-          id: postId,
-          userId: postId,
-          usuario_id: userId,
-          nombre: newUser.nombre,
-          dni: datos.dni,
-          email: datos.email,
-          carrera: newUser.carrera,
-          ciclo: newUser.ciclo,
-          score_socioeconomico: 65,
-          fecha_postulacion: getToday(),
-          estado: 'pendiente',
-          documentos: ['FUT.pdf'],
-          observaciones: 'Expediente registrado en línea.'
-        });
-      }
-
+      // Modo offline: actualizar en seed local
+      const allUsers = DB.get('users');
+      const user = allUsers.find(u => u.dni === dni && (u.email === correo || u.correo === correo));
+      if (!user) return { ok: false, error: 'No se encontró un usuario con ese DNI y correo.' };
+      user.contrasena = nuevaContrasena;
+      DB._save();
       return { ok: true };
     }
-  }
+  },
 
 };
 
